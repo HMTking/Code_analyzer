@@ -1,0 +1,1322 @@
+{
+    "Repos": {
+        "OCPStaging_Digital": {
+            "StaticCreated": {
+                "databasecreated": [
+                    "GPSMart_UCD",
+                    "GPSStaging_UCD"
+                ],
+                "tablescreated": [
+                    "GPSStaging_UCD.UploadConfig",
+                    "GPSMart_UCD.UploadConfig",
+                    "GPSStaging_UCD.RowCounts",
+                    "GPSStaging_UCD.RowCounts_Current",
+                    "GPSStaging_UCD.KPIComparison",
+                    "GPSStaging_UCD.KPI_Previous",
+                    "GPSMart_UCD.KPI_Previous",
+                    "GPSMart_UCD.RowCounts",
+                    "GPSMart_UCD.KPIComparison",
+                    "GPSMart_UCD.RowCounts_Current",
+                    "GPSStaging_UCD.CPS_Parquets",
+                    "GPSMart_UCD.Content_Owners",
+                    "GPSMart_UCD.Industry_CampaignNames",
+                    "GPSMart_UCD.Last_RevenueRefreshed_Folder"
+                ]
+            },
+            "ExtractedTables": [
+                {
+                    "tablename": "ReportingPartnerOne",
+                    "actualname": "ReportingPartnerOne",
+                    "createdname": "stg_ReportingPartnerOne",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/UCD_pm_Digital"
+                },
+                {
+                    "tablename": "Tmp_PowerApp",
+                    "actualname": "PowerApp.csv",
+                    "createdname": "Tmp_PowerApp",
+                    "extractionSource": "Excel",
+                    "extractiondetails": "dbfs:/mnt/ocpstaging_digital/Input_Excels/PowerApp.csv"
+                },
+                {
+                    "tablename": "Data_Dictionary",
+                    "actualname": "DataDictionaryTPM.csv",
+                    "createdname": "Data_Dictionary",
+                    "extractionSource": "Excel",
+                    "extractiondetails": "dbfs:/mnt/staging/stg_to_ADLS/Static/DataDictionaryTPM.csv"
+                },
+                {
+                    "tablename": "DimPartnerManagement",
+                    "actualname": "stg_DimPartnerManaged",
+                    "createdname": "stg_DimPartnerManaged",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/partnerv1_UCD"
+                },
+                {
+                    "tablename": "DimPartnerProfile",
+                    "actualname": "stg_DimPartnerProfile",
+                    "createdname": "stg_DimPartnerProfile",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/partnerv1_UCD"
+                },
+                {
+                    "tablename": "FactProgramMetricDataSnapshot",
+                    "actualname": "stg_FactProgramMetricDataSnapshot",
+                    "createdname": "stg_FactProgramMetricDataSnapshot",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/pcs_UCD"
+                },
+                {
+                    "tablename": "DimGeography",
+                    "actualname": "DimGeography",
+                    "createdname": "stg_DimGeography",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "[latest_path]DimGeography"
+                },
+                {
+                    "tablename": "MapAzureConsumedRevenue",
+                    "actualname": "MapAzureConsumedRevenue",
+                    "createdname": "stg_MapAzureConsumedRevenue",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "[latest_path]MapAzureConsumedRevenue"
+                },
+                {
+                    "tablename": "FactAzureConsumedRevenue",
+                    "actualname": "FactAzureConsumedRevenue",
+                    "createdname": "stg_FactAzureConsumedRevenue",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "[latest_path]FactAzureConsumedRevenue"
+                },
+                {
+                    "tablename": "MapBilledRevenue",
+                    "actualname": "MapBilledRevenue",
+                    "createdname": "stg_MapBilledRevenue",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "[latest_path]MapBilledRevenue"
+                },
+                {
+                    "tablename": "FactBilledRevenue",
+                    "actualname": "FactBilledRevenue",
+                    "createdname": "stg_FactBilledRevenue",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "[latest_path]FactBilledRevenue"
+                },
+                {
+                    "tablename": "DimSegment",
+                    "actualname": "DimSegment",
+                    "createdname": "stg_DimSegment",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "[latest_path]DimSegment"
+                },
+                {
+                    "tablename": "DimSrCase",
+                    "actualname": "DimSrCase",
+                    "createdname": "stg_DimSrCase",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/CRMMart_UCD/{latest_path}DimSrCase"
+                },
+                {
+                    "tablename": "DimSrPartnerAccount2",
+                    "actualname": "DimSrPartnerAccount2",
+                    "createdname": "stg_DimSrPartnerAccount2",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/CRMMart_UCD/{latest_path}DimSrPartnerAccount2"
+                },
+                {
+                    "tablename": "DimOpportunity",
+                    "actualname": "DimOpportunity",
+                    "createdname": "stg_DimOpportunity",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/CRMMart_UCD/{latest_path}DimOpportunity"
+                },
+                {
+                    "tablename": "DimPartnerDeal",
+                    "actualname": "DimPartnerDeal",
+                    "createdname": "stg_DimPartnerDeal",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/CRMMart_UCD/{latest_path}DimPartnerDeal"
+                },
+                {
+                    "tablename": "FactPartnerDeal",
+                    "actualname": "FactPartnerDeal",
+                    "createdname": "stg_FactPartnerDeal",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/CRMMart_UCD/{latest_path}FactPartnerDeal"
+                },
+                {
+                    "tablename": "FactSolutionPartnerDeal",
+                    "actualname": "FactSolutionPartnerDeal",
+                    "createdname": "stg_FactSolutionPartnerDeal",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/CRMMart_UCD/{latest_path}FactSolutionPartnerDeal"
+                },
+                {
+                    "tablename": "DMC_excel",
+                    "actualname": "DMC",
+                    "createdname": "stg_DMC",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/external/stg_PMC_DMC/DMC"
+                },
+                {
+                    "tablename": "PMC_excel",
+                    "actualname": "PMC",
+                    "createdname": "stg_PMC",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/external/stg_PMC_DMC/PMC"
+                },
+                {
+                    "tablename": "DimTime",
+                    "actualname": "DimTime",
+                    "createdname": "stg_DimTime",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "[latest_path_digital]DimTime"
+                },
+                {
+                    "tablename": "DimPartner",
+                    "actualname": "DimPartner",
+                    "createdname": "stg_DimPartner",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "[latest_path_digital]DimPartner"
+                },
+                {
+                    "tablename": "PreviousFiscal",
+                    "actualname": "PreviousFiscal",
+                    "createdname": "stg_PreviousFiscal",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/staging/UCD/PreviousFiscal"
+                },
+                {
+                    "tablename": "CurrentFiscal",
+                    "actualname": "CurrentFiscal",
+                    "createdname": "stg_CurrentFiscal",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/staging/UCD/CurrentFiscal"
+                },
+                {
+                    "tablename": "Clas_Downloads",
+                    "actualname": "CLAS_Downloads",
+                    "createdname": "stg_CLAS_Downloads",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "[latest_path]CLAS_Downloads"
+                },
+                {
+                    "tablename": "AMP_Details",
+                    "actualname": "MarketplaceHealth_Azure_Marketplace",
+                    "createdname": "stg_AMP_Details",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "dbfs:/mnt/staging/smd/MarketplaceHealth_Azure_Marketplace"
+                },
+                {
+                    "tablename": "DMCLogin",
+                    "actualname": "DMCLogin",
+                    "createdname": "stg_DMCLogin",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "[latest_path]DMCLogin"
+                },
+                {
+                    "tablename": "DMCEngaged",
+                    "actualname": "DMCEngaged",
+                    "createdname": "stg_DMCEngaged",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "[latest_path]DMCEngaged"
+                },
+                {
+                    "tablename": "MapCloudSnapshot",
+                    "actualname": "Map_CloudSnapshot",
+                    "createdname": "stg_MapCloudSnapshot",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/UCD_integration/Map_CloudSnapshot"
+                },
+                {
+                    "tablename": "DimSalesGeography",
+                    "actualname": "DimSalesGeography",
+                    "createdname": "stg_DimSalesGeography",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/UCD_sales_Digital/DimSalesGeography"
+                },
+                {
+                    "tablename": "DimCustomer",
+                    "actualname": "DimCustomer",
+                    "createdname": "stg_DimCustomer",
+                    "extractionSource": "parquet",
+                    "extractiondetails": "/mnt/processed/UCD_sales_Digital/DimCustomer"
+                },
+                {
+                    "tablename": "stg_Campaign",
+                    "actualname": "Campaign",
+                    "createdname": "stg_Campaign",
+                    "extractionSource": "SQL Server",
+                    "extractiondetails": "dmc-db-prod-replica.database.windows.net"
+                },
+                {
+                    "tablename": "stg_Campaign_SolArea",
+                    "actualname": "CampaignSolutionArea",
+                    "createdname": "stg_Campaign_SolArea",
+                    "extractionSource": "SQL Server",
+                    "extractiondetails": "dmc-db-prod-replica.database.windows.net"
+                },
+                {
+                    "tablename": "stg_SolArea",
+                    "actualname": "SolutionArea",
+                    "createdname": "stg_SolArea",
+                    "extractionSource": "SQL Server",
+                    "extractiondetails": "dmc-db-prod-replica.database.windows.net"
+                }
+            ],
+            "Mounts": [
+                {
+                    "DummyPath": "/mnt/staging/stg_UCD",
+                    "ActualPath": "abfss://staging@<ADLS_NAME>/digital/ocpstaging_digital/"
+                },
+                {
+                    "DummyPath": "/mnt/ocpstaging_digital/Input_Excels/",
+                    "ActualPath": "wasbs://ocpstaging-digital@<STORE_NAME>/Input_Excels/"
+                },
+                {
+                    "DummyPath": "/mnt/staging/stg_to_ADLS_UCD",
+                    "ActualPath": "abfss://staging@<ADLS_NAME>/UCD/gpsstaging_UCD/"
+                },
+                {
+                    "DummyPath": "/mnt/staging/stg_to_ADLS",
+                    "ActualPath": "abfss://staging@<ADLS_NAME>/UCD/"
+                },
+                {
+                    "DummyPath": "/mnt/external/stg_PMC_DMC",
+                    "ActualPath": "abfss://external@<ADLS_NAME>/Digital"
+                },
+                {
+                    "DummyPath": "/mnt/processed/UCD_GPS_CPS",
+                    "ActualPath": "abfss://processed@<storage-account-name>/GPS_CPS/Mart"
+                },
+                {
+                    "DummyPath": "/mnt/processed/CRMMart_UCD",
+                    "ActualPath": "abfss://processed@<storage-account-name>/crm/OCPMart_CRM"
+                },
+                {
+                    "DummyPath": "/mnt/processed/partnerv1_UCD",
+                    "ActualPath": "abfss://processed@<storage-account-name>/PartnerV1"
+                },
+                {
+                    "DummyPath": "/mnt/processed/pcs_UCD",
+                    "ActualPath": "abfss://processed@<storage-account-name>/pcs/ocpmart_pcs"
+                },
+                {
+                    "DummyPath": "/mnt/processed/UCD_pm_Digital",
+                    "ActualPath": "abfss://processed@<storage-account-name>/partnermastering"
+                },
+                {
+                    "DummyPath": "/mnt/processed/UCD_digital",
+                    "ActualPath": "abfss://processed@<storage-account-name>/Digital"
+                },
+                {
+                    "DummyPath": "/mnt/processed/UCD_sales_Digital",
+                    "ActualPath": "abfss://processed@<storage-account-name>/mssales"
+                },
+                {
+                    "DummyPath": "/mnt/processed/UCD_mart",
+                    "ActualPath": "abfss://processed@<storage-account-name>/UCD"
+                },
+                {
+                    "DummyPath": "/mnt/processed/UCD_integration",
+                    "ActualPath": "abfss://processed@<storage-account-name>/Mart_Integration"
+                }
+            ],
+            "MartTables": [
+                {
+                    "tablename": "DimTime",
+                    "databasename": "GPSMart_UCD",
+                    "tabletype": "created",
+                    "ColumnUsed": [
+                        "FiscalYear",
+                        "FiscalQuarterName",
+                        "FiscalSemesterName",
+                        "FiscalYearName",
+                        "FiscalYearMonthName",
+                        "FiscalMonth",
+                        "FiscalYearID",
+                        "FiscalMonthID",
+                        "FiscalQuarterID",
+                        "FiscalSemesterID",
+                        "CalendarDate",
+                        "DateTimeKey",
+                        "IsAzureFM",
+                        "IsRollingLast6CalendarMonth",
+                        "IsRollingLast6InclCurrentMonth",
+                        "IsCurrentFY",
+                        "IsLast4Months"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DimTime",
+                        "stg_MapCloudSnapshot"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_DimTime",
+                    "databasename": "",
+                    "tabletype": "created",
+                    "ColumnUsed": [
+                        "FiscalYear",
+                        "FiscalQuarterName",
+                        "FiscalSemesterName",
+                        "FiscalYearName",
+                        "FiscalYearMonthName",
+                        "FiscalMonth",
+                        "FiscalYearID",
+                        "FiscalMonthID",
+                        "FiscalQuarterID",
+                        "FiscalSemesterID",
+                        "CalendarDate",
+                        "DateTimeKey",
+                        "IsAzureFM",
+                        "IsRollingLast6CalendarMonth",
+                        "IsRollingLast6InclCurrentMonth",
+                        "IsCurrentFY",
+                        "IsLast4Months"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DimTime",
+                        "stg_MapCloudSnapshot"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_PowerApp_Campaigns",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "CampaignID",
+                        "Title",
+                        "DestinationURL",
+                        "BG",
+                        "Initiative",
+                        "SubInitiative",
+                        "Channel",
+                        "ChannelType",
+                        "Tactice",
+                        "CreatedOn",
+                        "FinalURL",
+                        "ShortURL",
+                        "Campaign_WTMC_ID",
+                        "Campaign_OCID",
+                        "CampaignStartDate",
+                        "CampaignEndDate",
+                        "DigitalConversions",
+                        "CampaignGoal",
+                        "Audience",
+                        "AudienceSize",
+                        "SolutionArea",
+                        "SolutionPlay"
+                    ],
+                    "Stagingtableused": [
+                        "GPSStaging_UCD.stg_PowerApp"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_MapPartner",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerGlobalID",
+                        "PartnerID",
+                        "PartnerName",
+                        "IsManaged",
+                        "Area",
+                        "CountryName",
+                        "CustomTimeZone"
+                    ],
+                    "Stagingtableused": [
+                        "GPSStaging_UCD.stg_DimPartner",
+                        "GPSStaging_UCD.stg_DimPartnerManaged",
+                        "GPSStaging_UCD.stg_DimPartnerProfile",
+                        "GPSStaging_UCD.stg_DimSalesGeography",
+                        "GPSStaging_UCD.stg_DimGeography",
+                        "GPSStaging_UCD.stg_ReportingPartnerOne"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_FactAzureConsumedRevenue",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerOneID",
+                        "FiscalMonthID",
+                        "BusinessKey",
+                        "CustomerKey",
+                        "CreditedGeographyKey",
+                        "SubSegmentKey",
+                        "ACR"
+                    ],
+                    "Stagingtableused": [
+                        "stg_MapAzureConsumedRevenue",
+                        "stg_ReportingPartnerOne",
+                        "stg_FactAzureConsumedRevenue",
+                        "DimTime"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_FactFieldRevenueAccountability_PartnerOne",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "CustomerKey",
+                        "FiscalMonthID",
+                        "PartnerOneID",
+                        "BusinessKey",
+                        "SubSegmentKey",
+                        "CreditedGeographyKey",
+                        "FRA"
+                    ],
+                    "Stagingtableused": [
+                        "stg_FactBilledRevenue",
+                        "DimTime",
+                        "stg_MapBilledRevenue",
+                        "stg_ReportingPartnerOne",
+                        "Tmp_FactAzureConsumedRevenue"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Revenue",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerOneID",
+                        "FiscalMonthID",
+                        "BusinessKey",
+                        "CustomerKey",
+                        "CreditedGeographyKey",
+                        "SubSegmentKey",
+                        "SubsidiaryName",
+                        "ACR",
+                        "FRA",
+                        "IsRevenue"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DimPartner",
+                        "stg_DimSalesGeography",
+                        "Tmp_FactAzureConsumedRevenue",
+                        "Tmp_FactFieldRevenueAccountability_PartnerOne"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_DimIndustry",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerOneID",
+                        "IndustryName",
+                        "VerticalName",
+                        "CustomerSegment",
+                        "CustomerSubSegment"
+                    ],
+                    "Stagingtableused": [
+                        "Revenue",
+                        "stg_DimCustomer",
+                        "stg_DimSegment"
+                    ]
+                },
+                {
+                    "tablename": "Revenue",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerOneID",
+                        "FiscalMonthID",
+                        "BusinessKey",
+                        "CustomerKey",
+                        "CreditedGeographyKey",
+                        "SubSegmentKey",
+                        "SubsidiaryName",
+                        "ACR",
+                        "FRA",
+                        "IsRevenue"
+                    ],
+                    "Stagingtableused": [
+                        "Tmp_Revenue"
+                    ]
+                },
+                {
+                    "tablename": "DimIndustry",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerOneID",
+                        "IndustryName",
+                        "VerticalName",
+                        "CustomerSegment",
+                        "CustomerSubSegment"
+                    ],
+                    "Stagingtableused": [
+                        "Tmp_DimIndustry"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_DMCLeads",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "AccountCampaignID",
+                        "PartnerOneID",
+                        "FiscalMonthID",
+                        "CampaignTitle",
+                        "SolutionArea",
+                        "ContentOwner"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DMC",
+                        "DimTime",
+                        "stg_DimPartner",
+                        "stg_ReportingPartnerOne",
+                        "Industry_CampaignNames",
+                        "Content_Owners",
+                        "stg_Campaign",
+                        "stg_Campaign_SolArea",
+                        "stg_SolArea"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_PMCLeads",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "DownloadKey",
+                        "PartnerOneID",
+                        "FiscalMonthID",
+                        "AssetTitle",
+                        "SolutionArea",
+                        "ContentOwner"
+                    ],
+                    "Stagingtableused": [
+                        "stg_PMC",
+                        "stg_DimPartner",
+                        "stg_ReportingPartnerOne",
+                        "DimTime",
+                        "Content_Owners"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Central_Partners",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerOneID",
+                        "PartnerOneName",
+                        "IsTotalAudience",
+                        "IsManaged",
+                        "PartnerBusinessModel",
+                        "IsSI",
+                        "IsTelcoOperator",
+                        "IsBPGI",
+                        "IsGSI",
+                        "IsSureStep",
+                        "IsBuildfor2030",
+                        "IsIndirectProvider",
+                        "InDMC",
+                        "InPMC",
+                        "IsRevenuePartner",
+                        "IsNonRevenuePartner"
+                    ],
+                    "Stagingtableused": [
+                        "stg_ReportingPartnerOne",
+                        "DMCLeads",
+                        "PMCLeads"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Virtual",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "AccountCampaignID",
+                        "DownloadKey",
+                        "PartnerOneID",
+                        "FiscalMonthID",
+                        "CampaignTitle",
+                        "AssetTitle",
+                        "SolutionArea",
+                        "ContentOwner"
+                    ],
+                    "Stagingtableused": [
+                        "DMCLeads",
+                        "PMCLeads",
+                        "Content_Owners"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_DimSegment",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerOneID",
+                        "PartnerSegment",
+                        "PartnerSubSegment"
+                    ],
+                    "Stagingtableused": [
+                        "stg_ReportingPartnerOne",
+                        "Central_Partners"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_DPD",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerOneID",
+                        "PartnerDealKey",
+                        "FiscalMonthID",
+                        "OpportunityKey",
+                        "ConsumptionStatus",
+                        "BilledRevenueStatus",
+                        "ConsumptionStatusReason",
+                        "Pipeline_Rev"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DimPartnerDeal",
+                        "stg_FactPartnerDeal",
+                        "Central_Partners",
+                        "DimTime",
+                        "stg_DimOpportunity",
+                        "stg_FactSolutionPartnerDeal"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Oppty",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerOneID",
+                        "FiscalMonthID",
+                        "TotalOpenOppty",
+                        "TotalClosedOppty",
+                        "Deal",
+                        "PipelineRevenue"
+                    ],
+                    "Stagingtableused": [
+                        "Tmp_DPD"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Campaign_MCPP",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerGlobalID",
+                        "PartnerID",
+                        "PartnerName",
+                        "ReportingSnapshotDate",
+                        "CalendarDate",
+                        "Type",
+                        "ProgramID",
+                        "Status"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DimPartner",
+                        "stg_FactProgramMetricDataSnapshot"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Campaign_CLAS",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DimPartner",
+                        "stg_CLAS_Downloads"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Campaign_CED",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "requestType",
+                        "subtype",
+                        "activeStage",
+                        "CreatedOn"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DimPartner",
+                        "stg_DimSrCase"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Campaign_GTM",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "GtmStatus",
+                        "CreatedOn"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DimPartner",
+                        "stg_DimSrCase"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Campaign_PTC",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "RequestType",
+                        "SubType",
+                        "STATUS",
+                        "CreatedOn"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DimPartner",
+                        "stg_DimSrCase"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Campaign_AzureMarketplace",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "FirstLivePublishDate"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DimPartner",
+                        "stg_AMP_Details"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Campaign_DMCLogin",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "LoginDate"
+                    ],
+                    "Stagingtableused": [
+                        "stg_DimPartner",
+                        "stg_DMCLogin"
+                    ]
+                },
+                {
+                    "tablename": "Tmp_Campaign_Impacts",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate"
+                    ],
+                    "Stagingtableused": []
+                },
+                {
+                    "tablename": "Campaign_Impacts_Intermediate",
+                    "databasename": "",
+                    "tabletype": "Created",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "FiscalMonth",
+                        "FiscalMonthID"
+                    ],
+                    "Stagingtableused": [
+                        "Tmp_Campaign_Impacts",
+                        "stg_DimTime"
+                    ]
+                },
+                {
+                    "tablename": "Campaign_MCPP",
+                    "databasename": "",
+                    "tabletype": "Created From Other",
+                    "ColumnUsed": [
+                        "PartnerGlobalID",
+                        "PartnerID",
+                        "PartnerName",
+                        "ReportingSnapshotDate",
+                        "CalendarDate",
+                        "Type",
+                        "ProgramID",
+                        "Status"
+                    ],
+                    "Stagingtableused": [
+                        "Tmp_Campaign_MCPP"
+                    ]
+                },
+                {
+                    "tablename": "Campaign_CLAS",
+                    "databasename": "",
+                    "tabletype": "Created From Other",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate"
+                    ],
+                    "Stagingtableused": [
+                        "Tmp_Campaign_CLAS"
+                    ]
+                },
+                {
+                    "tablename": "Campaign_CED",
+                    "databasename": "",
+                    "tabletype": "Created From Other",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "requestType",
+                        "subtype",
+                        "activeStage",
+                        "CreatedOn"
+                    ],
+                    "Stagingtableused": [
+                        "Tmp_Campaign_CED"
+                    ]
+                },
+                {
+                    "tablename": "Campaign_GTM",
+                    "databasename": "",
+                    "tabletype": "Created From Other",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "GtmStatus",
+                        "CreatedOn"
+                    ],
+                    "Stagingtableused": [
+                        "Tmp_Campaign_GTM"
+                    ]
+                },
+                {
+                    "tablename": "Campaign_PTC",
+                    "databasename": "",
+                    "tabletype": "Created From Other",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "RequestType",
+                        "SubType",
+                        "STATUS",
+                        "CreatedOn"
+                    ],
+                    "Stagingtableused": [
+                        "Tmp_Campaign_PTC"
+                    ]
+                },
+                {
+                    "tablename": "Campaign_AzureMarketplace",
+                    "databasename": "",
+                    "tabletype": "Created From Other",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "FirstLivePublishDate"
+                    ],
+                    "Stagingtableused": [
+                        "Tmp_Campaign_AzureMarketplace"
+                    ]
+                },
+                {
+                    "tablename": "Campaign_DMCLogin",
+                    "databasename": "",
+                    "tabletype": "Created From Other",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "LoginDate"
+                    ],
+                    "Stagingtableused": [
+                        "Tmp_Campaign_DMCLogin"
+                    ]
+                },
+                {
+                    "tablename": "Campaign_Impacts",
+                    "databasename": "",
+                    "tabletype": "Created From Other",
+                    "ColumnUsed": [
+                        "PartnerID",
+                        "PartnerName",
+                        "Type",
+                        "CalendarDate",
+                        "FiscalMonth",
+                        "FiscalMonthID"
+                    ],
+                    "Stagingtableused": [
+                        "Campaign_Impacts_Intermediate"
+                    ]
+                }
+            ],
+            "StagingTables": [
+                {
+                    "tablename": "stg_DimTime",
+                    "ColumnsUsed": [
+                        "FiscalYearID",
+                        "FiscalMonthID",
+                        "FiscalMonthName",
+                        "CalendarDATE",
+                        "FiscalYear",
+                        "FiscalQuarterName",
+                        "FiscalSemesterName",
+                        "FiscalYearName",
+                        "CalendarDate",
+                        "DateKey"
+                    ]
+                },
+                {
+                    "tablename": "stg_MapCloudSnapshot",
+                    "ColumnsUsed": [
+                        "IsAzureFM",
+                        "DateKey"
+                    ]
+                },
+                {
+                    "tablename": "stg_PowerApp",
+                    "ColumnsUsed": [
+                        "ShortURL",
+                        "Title",
+                        "DestinationURL",
+                        "BG",
+                        "Initiative",
+                        "SubInitiative",
+                        "Channel",
+                        "Tactice",
+                        "CreatedOn",
+                        "FinalURL",
+                        "CampaignStartDate",
+                        "CampaignEndDate",
+                        "DigitalConversions",
+                        "CampaignGoal",
+                        "Audience",
+                        "AudienceSize",
+                        "SolutionArea",
+                        "SolutionPlay"
+                    ]
+                },
+                {
+                    "tablename": "stg_DimPartner",
+                    "ColumnsUsed": [
+                        "PartnerGlobalID",
+                        "PartnerID",
+                        "PartnerName",
+                        "SubsidiaryName",
+                        "PartnerOneKey"
+                    ]
+                },
+                {
+                    "tablename": "stg_DimPartnerManaged",
+                    "ColumnsUsed": [
+                        "PartnerID",
+                        "IsManaged"
+                    ]
+                },
+                {
+                    "tablename": "stg_DimPartnerProfile",
+                    "ColumnsUsed": [
+                        "PartnerKey",
+                        "CountryName"
+                    ]
+                },
+                {
+                    "tablename": "stg_DimSalesGeography",
+                    "ColumnsUsed": [
+                        "AreaName",
+                        "SubsidiaryName"
+                    ]
+                },
+                {
+                    "tablename": "stg_DimGeography",
+                    "ColumnsUsed": [
+                        "CustomTimeZone",
+                        "Subsidiary"
+                    ]
+                },
+                {
+                    "tablename": "stg_ReportingPartnerOne",
+                    "ColumnsUsed": [
+                        "IsSPL",
+                        "PartnerOneID"
+                    ]
+                },
+                {
+                    "tablename": "GPSStaging_UCD.stg_ReportingPartnerOne",
+                    "ColumnsUsed": [
+                        "PartnerOneID",
+                        "PartnerOneReportingKey"
+                    ]
+                },
+                {
+                    "tablename": "GPSStaging_UCD.stg_MapAzureConsumedRevenue",
+                    "ColumnsUsed": [
+                        "PartnerOneReportingKey",
+                        "ConsumptionKey",
+                        "PercentAllocation",
+                        "IsACR"
+                    ]
+                },
+                {
+                    "tablename": "GPSStaging_UCD.stg_FactAzureConsumedRevenue",
+                    "ColumnsUsed": [
+                        "ConsumptionKey",
+                        "FiscalMonthID",
+                        "AzureConsumedRevenue",
+                        "IsACR",
+                        "BusinessKey",
+                        "CustomerKey",
+                        "CreditedGeographyKey",
+                        "SubSegmentKey"
+                    ]
+                },
+                {
+                    "tablename": "GPSStaging_UCD.stg_MapBilledRevenue",
+                    "ColumnsUsed": [
+                        "AssociationID",
+                        "AssociationTypeKey",
+                        "PartnerOneReportingKey",
+                        "PerspectiveKey"
+                    ]
+                },
+                {
+                    "tablename": "GPSStaging_UCD.stg_FactBilledRevenue",
+                    "ColumnsUsed": [
+                        "AssociationID",
+                        "FiscalMonthID",
+                        "IsFRA",
+                        "CustomerKey",
+                        "BusinessKey",
+                        "BilledRevenue",
+                        "SubSegmentKey",
+                        "CreditedGeographyKey"
+                    ]
+                },
+                {
+                    "tablename": "GPSStaging_UCD.stg_DimCustomer",
+                    "ColumnsUsed": [
+                        "CustomerKey",
+                        "IndustryName",
+                        "VerticalName"
+                    ]
+                },
+                {
+                    "tablename": "GPSStaging_UCD.stg_DimSegment",
+                    "ColumnsUsed": [
+                        "SubSegmentKey",
+                        "ReportingCustomSegment",
+                        "CustomSummarySegmentName"
+                    ]
+                },
+                {
+                    "tablename": "GPSStaging_UCD.stg_DimPartner",
+                    "ColumnsUsed": [
+                        "PartnerOneKey"
+                    ]
+                },
+                {
+                    "tablename": "GPSStaging_UCD.stg_DimSalesGeography",
+                    "ColumnsUsed": [
+                        "SubsidiaryID",
+                        "SubsidiaryName"
+                    ]
+                },
+                {
+                    "tablename": "DimTime",
+                    "ColumnsUsed": [
+                        "FiscalMonthID",
+                        "IsAzureFM"
+                    ]
+                },
+                {
+                    "tablename": "DMCLeads",
+                    "ColumnsUsed": [
+                        "AccountCampaignID",
+                        "PartnerOneID",
+                        "FiscalMonthID",
+                        "CampaignTitle",
+                        "SolutionArea",
+                        "ContentOwner"
+                    ]
+                },
+                {
+                    "tablename": "PMCLeads",
+                    "ColumnsUsed": [
+                        "DownloadKey",
+                        "PartnerOneID",
+                        "FiscalMonthID",
+                        "AssetTitle",
+                        "SolutionArea",
+                        "ContentOwner"
+                    ]
+                },
+                {
+                    "tablename": "Central_Partners",
+                    "ColumnsUsed": [
+                        "PartnerOneID"
+                    ]
+                },
+                {
+                    "tablename": "stg_DMC",
+                    "ColumnsUsed": [
+                        "AccountCampaignID",
+                        "MPNID",
+                        "StartedDate",
+                        "CampaignTitle",
+                        "CampaignID"
+                    ]
+                },
+                {
+                    "tablename": "Industry_CampaignNames",
+                    "ColumnsUsed": [
+                        "CampaignTitle"
+                    ]
+                },
+                {
+                    "tablename": "Content_Owners",
+                    "ColumnsUsed": [
+                        "SolutionArea",
+                        "ContentOwner",
+                        "ContentOwnerEmail"
+                    ]
+                },
+                {
+                    "tablename": "stg_Campaign",
+                    "ColumnsUsed": [
+                        "CampaignId"
+                    ]
+                },
+                {
+                    "tablename": "stg_Campaign_SolArea",
+                    "ColumnsUsed": [
+                        "CampaignId",
+                        "SolutionAreaId"
+                    ]
+                },
+                {
+                    "tablename": "stg_SolArea",
+                    "ColumnsUsed": [
+                        "SolutionAreaId",
+                        "DisplayName"
+                    ]
+                },
+                {
+                    "tablename": "stg_PMC",
+                    "ColumnsUsed": [
+                        "DownloadKey",
+                        "PartnerID",
+                        "Timestamp",
+                        "AssetTitle",
+                        "ContentOwner"
+                    ]
+                },
+                {
+                    "tablename": "stg_DimPartnerDeal",
+                    "ColumnsUsed": [
+                        "PartnerDealKey",
+                        "CreatedDate"
+                    ]
+                },
+                {
+                    "tablename": "stg_FactPartnerDeal",
+                    "ColumnsUsed": [
+                        "PartnerDealKey",
+                        "PartnerOneKey",
+                        "OpportunityKey"
+                    ]
+                },
+                {
+                    "tablename": "stg_DimOpportunity",
+                    "ColumnsUsed": [
+                        "OpportunityKey",
+                        "ConsumptionStatus",
+                        "BilledRevenueStatus",
+                        "ConsumptionStatusReason"
+                    ]
+                },
+                {
+                    "tablename": "stg_FactSolutionPartnerDeal",
+                    "ColumnsUsed": [
+                        "PartnerOneKey",
+                        "PartnerRevenueCD",
+                        "PartnerDealKey",
+                        "OpportunityKey"
+                    ]
+                },
+                {
+                    "tablename": "Revenue",
+                    "ColumnsUsed": [
+                        "PartnerOneID"
+                    ]
+                },
+                {
+                    "tablename": "stg_FactProgramMetricDataSnapshot",
+                    "ColumnsUsed": [
+                        "PartnerGlobalID",
+                        "VorgMPNID",
+                        "ProgramID",
+                        "Status",
+                        "ReportingSnapshotDate"
+                    ]
+                },
+                {
+                    "tablename": "stg_CLAS_Downloads",
+                    "ColumnsUsed": [
+                        "PartnerID",
+                        "CalendarDate"
+                    ]
+                },
+                {
+                    "tablename": "stg_DimSrCase",
+                    "ColumnsUsed": [
+                        "PartnerID",
+                        "requestType",
+                        "subtype",
+                        "activeStage",
+                        "GtmStatus",
+                        "STATUS",
+                        "CreatedOn"
+                    ]
+                },
+                {
+                    "tablename": "stg_AMP_Details",
+                    "ColumnsUsed": [
+                        "PartnerID",
+                        "FirstLivePublishDate"
+                    ]
+                },
+                {
+                    "tablename": "stg_DMCLogin",
+                    "ColumnsUsed": [
+                        "PartnerID",
+                        "LoginDate"
+                    ]
+                }
+            ]
+        }
+    }
+}

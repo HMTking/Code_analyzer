@@ -1,0 +1,368 @@
+/* OutputView / Lineage View Styles - Light Theme (Matching App Design) */
+
+:root {
+    --bg-light: #f5f5f5;
+    --bg-white: #ffffff;
+    --accent-teal: #00bcd4;
+    --accent-teal-hover: #00acc1;
+    --accent-orange: #ff7043;
+    --text-dark: #333333;
+    --text-secondary: #666666;
+    --text-muted: #999999;
+    --border-color: #e0e0e0;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.lineage-container {
+    padding: 0;
+    background: var(--bg-light);
+    min-height: calc(100vh - 135px);
+    width: 100%;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Section */
+.lineage-header {
+    background: var(--bg-white);
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.lineage-header h2 {
+    color: var(--text-dark);
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+}
+
+/* Controls Row */
+.lineage-controls {
+    background: var(--bg-white);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+/* Buttons */
+.lineage-btn {
+    background: var(--accent-teal);
+    border: none;
+    border-radius: 4px;
+    padding: 10px 24px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #ffffff;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.lineage-btn:hover {
+    background: var(--accent-teal-hover);
+    box-shadow: var(--shadow-md);
+}
+
+.lineage-btn:active {
+    transform: translateY(1px);
+}
+
+.lineage-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.3);
+}
+
+.lineage-btn-filter {
+    background: var(--accent-orange);
+}
+
+.lineage-btn-filter:hover {
+    background: #ff5722;
+}
+
+/* Select Dropdown */
+.lineage-select {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 10px 40px 10px 16px;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    transition: all 0.2s ease;
+    min-width: 280px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+}
+
+.lineage-select:hover {
+    border-color: var(--accent-teal);
+}
+
+.lineage-select:focus {
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.15);
+    outline: none;
+}
+
+.lineage-select option {
+    background: var(--bg-white);
+    color: var(--text-dark);
+    padding: 12px;
+}
+
+/* ReactFlow Container - Full Screen */
+.lineage-flow-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-light);
+    min-height: 0;
+    margin: 16px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.lineage-flow {
+    flex: 1;
+    width: 100%;
+    min-height: calc(100vh - 340px);
+    background: var(--bg-white);
+}
+
+/* ReactFlow Custom Node Styles */
+.react-flow__node {
+    background: var(--accent-teal);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s ease;
+}
+
+.react-flow__node:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+    z-index: 10;
+}
+
+.react-flow__node.selected {
+    box-shadow: 0 0 0 2px var(--accent-orange), var(--shadow-lg);
+}
+
+/* Edge Styles */
+.react-flow__edge-path {
+    stroke: var(--accent-teal);
+    stroke-width: 2;
+}
+
+.react-flow__edge.selected .react-flow__edge-path,
+.react-flow__edge:hover .react-flow__edge-path {
+    stroke: var(--accent-orange);
+    stroke-width: 3;
+}
+
+/* Controls Panel */
+.react-flow__controls {
+    background: var(--bg-white);
+    border-radius: 6px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    left: 20px;
+    bottom: 20px;
+}
+
+.react-flow__controls-button {
+    background: var(--bg-white);
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    width: 32px;
+    height: 32px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.react-flow__controls-button:hover {
+    background: var(--bg-light);
+}
+
+.react-flow__controls-button:last-child {
+    border-bottom: none;
+}
+
+.react-flow__controls-button svg {
+    fill: var(--text-secondary);
+    width: 14px;
+    height: 14px;
+}
+
+.react-flow__controls-button:hover svg {
+    fill: var(--text-dark);
+}
+
+/* MiniMap */
+.react-flow__minimap {
+    background: var(--bg-white) !important;
+    border-radius: 6px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    right: 20px;
+    bottom: 20px;
+}
+
+/* Background */
+.react-flow__background {
+    background-color: var(--bg-white) !important;
+}
+
+/* Legend - Inline in controls */
+.lineage-legend {
+    display: flex;
+    gap: 24px;
+    margin-left: auto;
+    padding: 0;
+    background: transparent;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+}
+
+.legend-staging {
+    background: var(--accent-orange);
+}
+
+.legend-mart {
+    background: var(--accent-teal);
+}
+
+/* Empty State - Full Height */
+.lineage-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 340px);
+    background: var(--bg-light);
+}
+
+.lineage-empty-icon {
+    font-size: 4rem;
+    margin-bottom: 24px;
+    opacity: 0.5;
+}
+
+.lineage-empty-text {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Attribution hidden */
+.react-flow__attribution {
+    display: none;
+}
+
+/* Panel styling */
+.react-flow__panel {
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .lineage-header {
+        padding: 12px 16px;
+    }
+
+    .lineage-header h2 {
+        font-size: 1rem;
+    }
+
+    .lineage-controls {
+        padding: 12px 16px;
+        gap: 12px;
+    }
+
+    .lineage-select {
+        min-width: 100%;
+        flex: 1;
+    }
+
+    .lineage-btn {
+        flex: 1;
+        text-align: center;
+        padding: 10px 16px;
+    }
+
+    .lineage-legend {
+        display: none;
+    }
+
+    .lineage-flow {
+        min-height: calc(100vh - 180px);
+    }
+}
+
+@media (max-width: 480px) {
+    .lineage-controls {
+        flex-direction: column;
+    }
+
+    .lineage-btn {
+        width: 100%;
+    }
+}
+
+/* Hide connection handles (dots) on nodes */
+.react-flow__handle {
+    opacity: 0 !important;
+    width: 1px !important;
+    height: 1px !important;
+    min-width: 1px !important;
+    min-height: 1px !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+/* Edge path styling for clean lines */
+.react-flow__edge-path {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Smoothstep edges */
+.react-flow__edge.react-flow__edge-smoothstep path {
+    stroke: #888;
+    stroke-width: 2px;
+}
