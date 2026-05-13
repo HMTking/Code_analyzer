@@ -1,7 +1,7 @@
 require('dotenv').config({ path: require('path').join(__dirname, '.env') });
-const { DefaultAzureCredential,getBearerTokenProvider } = require('@azure/identity');
+// AUTH_BYPASS — const { DefaultAzureCredential,getBearerTokenProvider } = require('@azure/identity');
 // const { OpenAIClient  } = require('@azure/openai');
-const { AzureOpenAI } = require('openai');
+// MODEL_SWAP — const { AzureOpenAI } = require('openai');
 const express = require('express');
 const fs = require('fs');
 const app = express();
@@ -20,11 +20,17 @@ const CONFIG = {
         .split(',')
         .map(e => e.trim().toLowerCase())
         .filter(Boolean),
-    azureOpenAi: {
-        endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-        model: process.env.AZURE_OPENAI_MODEL,
-        apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-12-01-preview',
-    },
+    // MODEL_SWAP — original Azure OpenAI config:
+    // azureOpenAi: {
+    //     endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+    //     model: process.env.AZURE_OPENAI_MODEL,
+    //     apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-12-01-preview',
+    // },
+    openAi: {                                           // MODEL_SWAP
+        apiKey: process.env.OPENAI_API_KEY,             // MODEL_SWAP
+        model: process.env.OPENAI_MODEL || 'gpt-4o',   // MODEL_SWAP
+        baseURL: process.env.OPENAI_BASE_URL || undefined, // OPENROUTER_SWAP — empty = default openai.com
+    },                                                  // MODEL_SWAP
     sql: {
         server: process.env.SQL_SERVER,
         database: process.env.SQL_DATABASE,
@@ -36,8 +42,9 @@ const CONFIG = {
 for (const [k, v] of Object.entries({
     TENANT_ID: CONFIG.tenantId,
     CLIENT_ID: CONFIG.clientId,
-    AZURE_OPENAI_ENDPOINT: CONFIG.azureOpenAi.endpoint,
-    AZURE_OPENAI_MODEL: CONFIG.azureOpenAi.model,
+    // MODEL_SWAP — AZURE_OPENAI_ENDPOINT: CONFIG.azureOpenAi.endpoint,
+    // MODEL_SWAP — AZURE_OPENAI_MODEL: CONFIG.azureOpenAi.model,
+    OPENAI_API_KEY: CONFIG.openAi.apiKey,               // MODEL_SWAP
     SQL_SERVER: CONFIG.sql.server,
     SQL_DATABASE: CONFIG.sql.database,
 })) {
@@ -147,7 +154,7 @@ app.post('/update-json/:flag', (req, res) => {
                 res.send('Successfully wrote to file');
             }
         });
-    }  else if (flag == 10) {
+    } else if (flag == 10) {
         fs.writeFile('Pipeline.json', JSON.stringify(newData), (err) => {
             if (err) {
                 console.error(err);
@@ -156,7 +163,7 @@ app.post('/update-json/:flag', (req, res) => {
                 res.send('Successfully wrote to file');
             }
         });
-    }  else if (flag == 11) {
+    } else if (flag == 11) {
         fs.writeFile('BronzeLayer.json', JSON.stringify(newData), (err) => {
             if (err) {
                 console.error(err);
@@ -165,7 +172,7 @@ app.post('/update-json/:flag', (req, res) => {
                 res.send('Successfully wrote to file');
             }
         });
-    }  else if (flag == 12) {
+    } else if (flag == 12) {
         fs.writeFile('SilverLayer.json', JSON.stringify(newData), (err) => {
             if (err) {
                 console.error(err);
@@ -174,7 +181,7 @@ app.post('/update-json/:flag', (req, res) => {
                 res.send('Successfully wrote to file');
             }
         });
-    }   else if (flag == 13) {
+    } else if (flag == 13) {
         fs.writeFile('GoldLayer.json', JSON.stringify(newData), (err) => {
             if (err) {
                 console.error(err);
@@ -302,15 +309,31 @@ app.get('/api/marttostg', (req, res) => {
 //     }
 // })
 
-async function getGPTData(message, endpoint, model, apiKey) {
-    const client = new AzureOpenAI({
-        endpoint,
-        apiKey,
-        deployment: model,
-        apiVersion: CONFIG.azureOpenAi.apiVersion,
-    });
+// MODEL_SWAP — original getGPTData using AzureOpenAI:
+// async function getGPTData(message, endpoint, model, apiKey) {
+//     const client = new AzureOpenAI({
+//         endpoint,
+//         apiKey,
+//         deployment: model,
+//         apiVersion: CONFIG.azureOpenAi.apiVersion,
+//     });
+//     return client.chat.completions.create({
+//         model,
+//         messages: message,
+//     });
+// }
+
+// MODEL_SWAP — new getGPTData using standard OpenAI API
+const { OpenAI } = require('openai'); // MODEL_SWAP
+async function getGPTData(message, _endpoint, _model, _key) {
+    const effectiveKey = _key || CONFIG.openAi.apiKey;
+    const effectiveModel = _model || CONFIG.openAi.model;
+    // OPENROUTER_SWAP — original: const client = new OpenAI({ apiKey: effectiveKey });
+    const clientOpts = { apiKey: effectiveKey };                           // OPENROUTER_SWAP
+    if (CONFIG.openAi.baseURL) clientOpts.baseURL = CONFIG.openAi.baseURL; // OPENROUTER_SWAP
+    const client = new OpenAI(clientOpts);                                 // OPENROUTER_SWAP
     return client.chat.completions.create({
-        model,
+        model: effectiveModel,
         messages: message,
     });
 }
@@ -318,9 +341,18 @@ async function getGPTData(message, endpoint, model, apiKey) {
 app.post('/call-gpt', async (req, res) => {
     const { content, endpoint, model, key } = req.body;
 
-    if (!endpoint || !model || !key) {
+    // MODEL_SWAP — original validation required endpoint+model+key from Azure
+    // if (!endpoint || !model || !key) {
+    //     return res.status(400).send({
+    //         error: 'Deployment Endpoint, Model Name, and API Key are required.',
+    //     });
+    // }
+
+    // MODEL_SWAP — relaxed: use server-side key/model as fallback
+    const effectiveKey = key || CONFIG.openAi.apiKey;
+    if (!effectiveKey) {
         return res.status(400).send({
-            error: 'Deployment Endpoint, Model Name, and API Key are required.',
+            error: 'API Key is required. Set OPENAI_API_KEY in Backend/.env or provide it in the UI.',
         });
     }
 
@@ -330,7 +362,7 @@ app.post('/call-gpt', async (req, res) => {
     ];
 
     try {
-        const result = await getGPTData(message, endpoint, model, key);
+        const result = await getGPTData(message, endpoint, model, effectiveKey);
         if (!result) {
             return res.status(502).send({ error: "Empty response from model." });
         }
@@ -348,53 +380,37 @@ let cachedPool = null;
 let tokenExpiresOn = 0;
 
 async function getSqlPool() {
-    const now = Date.now();
-    // Reuse the existing pool if the token is still valid (with 5-min buffer)
-    if (cachedPool && cachedPool.connected && now < tokenExpiresOn - 5 * 60 * 1000) {
-        return cachedPool;
-    }
+    // AUTH_BYPASS — original Azure AD SQL pool:
+    // const now = Date.now();
+    // if (cachedPool && cachedPool.connected && now < tokenExpiresOn - 5 * 60 * 1000) {
+    //     return cachedPool;
+    // }
+    // try { await sql.close(); } catch (_) {}
+    // cachedPool = null;
+    // const credential = new DefaultAzureCredential();
+    // const accessToken = await credential.getToken("https://database.windows.net/");
+    // tokenExpiresOn = accessToken.expiresOnTimestamp;
+    // const config = {
+    //     server: CONFIG.sql.server,
+    //     database: CONFIG.sql.database,
+    //     options: { encrypt: true, enableArithAbort: true },
+    //     authentication: {
+    //         type: 'azure-active-directory-access-token',
+    //         options: { token: accessToken.token }
+    //     },
+    //     pool: { max: 10, min: 1, idleTimeoutMillis: 300000 }
+    // };
+    // cachedPool = await sql.connect(config);
+    // cachedPool.on('error', (err) => {
+    //     console.error('[mssql pool error]', err && err.message ? err.message : err);
+    //     cachedPool = null;
+    //     tokenExpiresOn = 0;
+    // });
+    // return cachedPool;
 
-    // Close stale pool before reconnecting
-    try { await sql.close(); } catch (_) {}
-    cachedPool = null;
-
-    const credential = new DefaultAzureCredential();
-    const accessToken = await credential.getToken("https://database.windows.net/");
-    tokenExpiresOn = accessToken.expiresOnTimestamp;
-
-    const config = {
-        server: CONFIG.sql.server,
-        database: CONFIG.sql.database,
-        options: {
-            encrypt: true,
-            enableArithAbort: true
-        },
-        authentication: {
-            type: 'azure-active-directory-access-token',
-            options: {
-                token: accessToken.token
-            }
-        },
-        pool: {
-            max: 10,
-            min: 1,
-            idleTimeoutMillis: 300000
-        }
-    };
-
-    cachedPool = await sql.connect(config);
-
-    // IMPORTANT: handle pool-level errors so an emitted 'error' event does
-    // not crash the entire Node process (mssql connection pool is an
-    // EventEmitter — an unhandled 'error' is fatal in Node).
-    cachedPool.on('error', (err) => {
-        console.error('[mssql pool error]', err && err.message ? err.message : err);
-        // Invalidate cache so the next request reconnects with a fresh token.
-        cachedPool = null;
-        tokenExpiresOn = 0;
-    });
-
-    return cachedPool;
+    // AUTH_BYPASS — SQL disabled in dev mode
+    console.warn('[getSqlPool] AUTH_BYPASS: SQL Server connection disabled in dev mode. Database features will not work.');
+    throw new Error('SQL Server connection is disabled in dev mode (AUTH_BYPASS). Set up local SQL or restore Azure credentials.');
 }
 
 // Global safety nets — log instead of crashing on stray async errors.
@@ -514,23 +530,25 @@ function verifyToken(token) {
 
 app.post('/save-to-repo', async (req, res) => {
     try {
-        // Verify Azure AD token from Authorization header
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ error: 'Missing or invalid authorization token.' });
-        }
-        const token = authHeader.split(' ')[1];
-        let decoded;
-        try {
-            decoded = await verifyToken(token);
-        } catch (tokenErr) {
-            console.error('Token verification failed:', tokenErr.message);
-            return res.status(401).json({ error: 'Invalid or expired token.' });
-        }
-        const userEmail = (decoded.preferred_username || decoded.email || '').toLowerCase();
-        if (!userEmail || !ALLOWED_SAVE_EMAILS.includes(userEmail)) {
-            return res.status(403).json({ error: 'You are not authorized to save to POSOT Data Explorer.' });
-        }
+        // AUTH_BYPASS — original token verification:
+        // const authHeader = req.headers.authorization;
+        // if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        //     return res.status(401).json({ error: 'Missing or invalid authorization token.' });
+        // }
+        // const token = authHeader.split(' ')[1];
+        // let decoded;
+        // try {
+        //     decoded = await verifyToken(token);
+        // } catch (tokenErr) {
+        //     console.error('Token verification failed:', tokenErr.message);
+        //     return res.status(401).json({ error: 'Invalid or expired token.' });
+        // }
+        // const userEmail = (decoded.preferred_username || decoded.email || '').toLowerCase();
+        // if (!userEmail || !ALLOWED_SAVE_EMAILS.includes(userEmail)) {
+        //     return res.status(403).json({ error: 'You are not authorized to save to POSOT Data Explorer.' });
+        // }
+
+        console.log('[save-to-repo] AUTH_BYPASS: skipping token verification'); // AUTH_BYPASS
 
         const { repoName, pipelines, bronzeDetails, silverDetails, goldDetails, stagingtables } = req.body;
         if (!repoName) {
@@ -598,7 +616,7 @@ app.post('/save-to-repo', async (req, res) => {
 
         // Delete old data for this repo so we do a full refresh
 
-         // Azmal - we don't need this 
+        // Azmal - we don't need this 
         const deleteTables = ['BronzeLayer', 'SilverLayer', 'GoldLayer', 'ColumnsUsed', 'Pipelines'];
         for (const tbl of deleteTables) {
             await pool.request()

@@ -14,7 +14,7 @@ import HowTo1 from "../Images/Picture2.svg"
 import { Stack } from 'react-bootstrap';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 import NavbarEnhanced from './NavbarEnhanced.js';
-import { getActiveAccount, getAccessToken } from '../authConfig';
+// AUTH_BYPASS — import { getActiveAccount, getAccessToken } from '../authConfig';
 
 const ALLOWED_SAVE_EMAILS = (process.env.REACT_APP_ALLOWED_SAVE_EMAILS || '')
     .split(',')
@@ -1209,11 +1209,7 @@ function Fabric() {
     const [saving, setSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState('');
 
-    const canSaveToRepo = (() => {
-        const account = getActiveAccount();
-        const candidates = getAccountEmailCandidates(account);
-        return candidates.some(email => ALLOWED_SAVE_EMAILS.includes(email));
-    })();
+    const canSaveToRepo = true; // AUTH_BYPASS — always allow in dev mode
 
     const saveToRepoExplorer = async () => {
         if (!canSaveToRepo) {
@@ -1227,7 +1223,7 @@ function Fabric() {
         setSaving(true);
         setSaveMessage('');
         try {
-            const token = await getAccessToken();
+            // AUTH_BYPASS — const token = await getAccessToken();
             await axios.post(`${backend_url}/save-to-repo`, {
                 repoName: repoName.trim(),
                 pipelines,
@@ -1235,9 +1231,7 @@ function Fabric() {
                 silverDetails,
                 goldDetails,
                 stagingtables
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            }); // AUTH_BYPASS — removed Authorization header
             setSaveMessage(`Saved to POSOT Data Explorer as "${repoName.trim()}" successfully!`);
         } catch (err) {
             console.error('Error saving to repo:', err);

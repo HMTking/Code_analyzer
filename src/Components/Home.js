@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Card, CardContent, CardActionArea, Chip, Button, Dialog, DialogContent, Avatar } from '@mui/material';
-import { useIsAuthenticated, useMsal } from '@azure/msal-react';
-import { loginRequest } from '../authConfig';
+// AUTH_BYPASS — import { useIsAuthenticated, useMsal } from '@azure/msal-react';
+// AUTH_BYPASS — import { loginRequest } from '../authConfig';
 import logo from '../Images/Logo.png';
 import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -35,74 +35,61 @@ const versions = [
 
 function Home() {
     const navigate = useNavigate();
-    const isAuthenticated = useIsAuthenticated();
-    const { instance, accounts } = useMsal();
+    // AUTH_BYPASS — const isAuthenticated = useIsAuthenticated();
+    // AUTH_BYPASS — const { instance, accounts } = useMsal();
+    const isAuthenticated = true;                               // AUTH_BYPASS
+    const accounts = [{ name: 'Dev User', username: 'dev@local' }]; // AUTH_BYPASS
+    const instance = { loginRedirect: () => {}, logoutRedirect: () => Promise.resolve(), clearCache: () => {} }; // AUTH_BYPASS
     const [profilePhoto, setProfilePhoto] = useState(null);
 
     const fullName = accounts.length > 0 ? accounts[0].name || accounts[0].username : '';
     const userName = fullName.split('|')[0].trim();
 
-    // Fetch profile photo from Microsoft Graph
-    useEffect(() => {
-        const fetchProfilePhoto = async () => {
-            if (!isAuthenticated || accounts.length === 0) return;
-            
-            try {
-                const response = await instance.acquireTokenSilent({
-                    ...loginRequest,
-                    account: accounts[0]
-                });
-                
-                const photoResponse = await fetch('https://graph.microsoft.com/v1.0/me/photo/$value', {
-                    headers: {
-                        'Authorization': `Bearer ${response.accessToken}`
-                    }
-                });
-                
-                if (photoResponse.ok) {
-                    const blob = await photoResponse.blob();
-                    const photoUrl = URL.createObjectURL(blob);
-                    setProfilePhoto(photoUrl);
-                }
-            } catch (error) {
-                console.log('Could not fetch profile photo:', error);
-            }
-        };
-        
-        fetchProfilePhoto();
-    }, [isAuthenticated, accounts, instance]);
+    // AUTH_BYPASS — Fetch profile photo from Microsoft Graph (disabled)
+    // useEffect(() => {
+    //     const fetchProfilePhoto = async () => {
+    //         if (!isAuthenticated || accounts.length === 0) return;
+    //         
+    //         try {
+    //             const response = await instance.acquireTokenSilent({
+    //                 ...loginRequest,
+    //                 account: accounts[0]
+    //             });
+    //             
+    //             const photoResponse = await fetch('https://graph.microsoft.com/v1.0/me/photo/$value', {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${response.accessToken}`
+    //                 }
+    //             });
+    //             
+    //             if (photoResponse.ok) {
+    //                 const blob = await photoResponse.blob();
+    //                 const photoUrl = URL.createObjectURL(blob);
+    //                 setProfilePhoto(photoUrl);
+    //             }
+    //         } catch (error) {
+    //             console.log('Could not fetch profile photo:', error);
+    //         }
+    //     };
+    //     
+    //     fetchProfilePhoto();
+    // }, [isAuthenticated, accounts, instance]);
 
-    // Save user alias to database on login
-    useEffect(() => {
-        if (!isAuthenticated || accounts.length === 0) return;
-        const userAlias = accounts[0].username;
-        const name = (accounts[0].name || accounts[0].username).split('|')[0].trim();
-        fetch('/api/user-alias', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userAlias: userAlias, userName: name })
-        }).catch(err => console.log('Could not save user alias:', err));
-    }, [isAuthenticated, accounts]);
+    // AUTH_BYPASS — Save user alias to database on login (disabled)
+    // useEffect(() => {
+    //     if (!isAuthenticated || accounts.length === 0) return;
+    //     const userAlias = accounts[0].username;
+    //     const name = (accounts[0].name || accounts[0].username).split('|')[0].trim();
+    //     fetch('/api/user-alias', {
+    //         method: 'POST',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         body: JSON.stringify({ userAlias: userAlias, userName: name })
+    //     }).catch(err => console.log('Could not save user alias:', err));
+    // }, [isAuthenticated, accounts]);
 
-    const handleLogin = () => {
-        instance.loginRedirect(loginRequest);
-    };
-
-    const handleLogout = () => {
-        const account = accounts[0];
-        instance.logoutRedirect({
-            account: account,
-            postLogoutRedirectUri: window.location.origin,
-            onRedirectNavigate: () => {
-                // Return false to skip redirect to Microsoft logout page
-                return false;
-            }
-        }).catch(() => {});
-        
-        // Clear all accounts and redirect immediately
-        instance.clearCache();
-        window.location.href = '/';
-    };
+    // AUTH_BYPASS — handleLogin and handleLogout replaced with no-ops
+    const handleLogin = () => { console.log('[Home] AUTH_BYPASS: login skipped'); }; // AUTH_BYPASS
+    const handleLogout = () => { console.log('[Home] AUTH_BYPASS: logout skipped'); }; // AUTH_BYPASS
 
     const handleCardClick = (path) => {
         if (isAuthenticated) {

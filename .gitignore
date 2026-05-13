@@ -60,7 +60,6 @@ test_results.txt
 
 # Backend build output
 Backend/build/
-Backend/node_modules/
 
-# Temp doc generation
-docgen/
+# documents
+reference_Doc

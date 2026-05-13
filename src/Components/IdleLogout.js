@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { useIsAuthenticated } from '@azure/msal-react';
-import { logout } from '../authConfig';
+// AUTH_BYPASS — import { useIsAuthenticated } from '@azure/msal-react';
+// AUTH_BYPASS — import { logout } from '../authConfig';
 
 // 30 minutes of no activity → auto logout.
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
@@ -71,7 +71,7 @@ function patchNetworkOnce() {
 }
 
 function IdleLogout() {
-    const isAuthenticated = useIsAuthenticated();
+    const isAuthenticated = true; // AUTH_BYPASS
     const idleTimerRef = useRef(null);
     const warnTimerRef = useRef(null);
     const lastActivityRef = useRef(0);
@@ -94,7 +94,8 @@ function IdleLogout() {
                 // Notify other tabs to log out as well.
                 try { localStorage.setItem(LOGOUT_KEY, String(Date.now())); } catch (_) {}
                 console.warn('[IdleLogout] Session expired due to inactivity. Logging out.');
-                await logout();
+                // AUTH_BYPASS — await logout();
+                console.log('[IdleLogout] AUTH_BYPASS: logout skipped'); // AUTH_BYPASS
             } catch (err) {
                 console.error('[IdleLogout] logout failed', err);
             }
