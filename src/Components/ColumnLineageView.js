@@ -17,6 +17,7 @@ function ColumnLineageView({
     selectedTable,
 }) {
     const containerRef = useRef(null);
+    const bodyRef = useRef(null);
     const [lines, setLines] = useState([]);
     const [hoveredLine, setHoveredLine] = useState(null);
     const [tooltip, setTooltip] = useState(null);
@@ -77,11 +78,11 @@ function ColumnLineageView({
 
     // Recalculate lines
     const calculateLines = useCallback(() => {
-        if (!containerRef.current || filteredLineage.length === 0) {
+        if (!bodyRef.current || filteredLineage.length === 0) {
             setLines([]);
             return;
         }
-        const containerRect = containerRef.current.getBoundingClientRect();
+        const bodyRect = bodyRef.current.getBoundingClientRect();
         const newLines = [];
 
         filteredLineage.forEach((entry, idx) => {
@@ -97,10 +98,10 @@ function ColumnLineageView({
                 const tr = tgtEl.getBoundingClientRect();
                 newLines.push({
                     key: `${srcId}-${tgtId}-${idx}`,
-                    x1: sr.right - containerRect.left,
-                    y1: sr.top + sr.height / 2 - containerRect.top,
-                    x2: tr.left - containerRect.left,
-                    y2: tr.top + tr.height / 2 - containerRect.top,
+                    x1: sr.right - bodyRect.left,
+                    y1: sr.top + sr.height / 2 - bodyRect.top,
+                    x2: tr.left - bodyRect.left,
+                    y2: tr.top + tr.height / 2 - bodyRect.top,
                     sourceTable: entry.sourceTable,
                     sourceColumn: entry.sourceColumn,
                     targetColumn: entry.targetColumn,
@@ -120,10 +121,10 @@ function ColumnLineageView({
 
     // Recalculate on scroll
     useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
+        const body = bodyRef.current;
+        if (!body) return;
 
-        const panels = container.querySelectorAll('.col-lineage-panel');
+        const panels = body.querySelectorAll('.col-lineage-panel');
         const onScroll = () => calculateLines();
 
         panels.forEach(panel => panel.addEventListener('scroll', onScroll));
@@ -201,7 +202,7 @@ function ColumnLineageView({
                 <span className="col-lineage-edge-count">Edges: {filteredLineage.length}</span>
             </div>
 
-            <div className="col-lineage-body">
+            <div className="col-lineage-body" ref={bodyRef}>
                 {/* SVG Overlay */}
                 <svg className="col-lineage-svg">
                     {lines.map((l) => (
