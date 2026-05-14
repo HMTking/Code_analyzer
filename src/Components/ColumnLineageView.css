@@ -3,11 +3,11 @@
 .col-lineage-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
     min-height: 500px;
     background-color: #ffffff;
     border-radius: 8px;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: visible;
     position: relative;
 }
 
@@ -50,7 +50,7 @@
     display: flex;
     flex-direction: row;
     flex: 1;
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* SVG overlay for connecting lines */
@@ -66,22 +66,23 @@
 
 .col-lineage-svg path {
     pointer-events: stroke;
-    transition: stroke 0.15s, stroke-width 0.15s;
+    transition: stroke 0.15s, stroke-width 0.15s, opacity 0.15s;
 }
 
 /* Panels */
 .col-lineage-panel {
     width: 45%;
-    overflow-y: auto;
     padding: 16px 20px;
 }
 
 .col-lineage-panel-left {
     border-right: 1px solid #e0e0e0;
+    overflow-y: auto;
 }
 
 .col-lineage-panel-right {
     margin-left: auto;
+    overflow-y: visible;
 }
 
 .col-lineage-panel-header {
@@ -156,6 +157,12 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+    user-select: none;
+}
+
+.col-lineage-column-chip:hover {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
 .col-lineage-column-chip-source {
@@ -168,6 +175,23 @@
     background: #e8f5e9;
     border: 1px solid #4caf50;
     color: #333333;
+}
+
+/* Selected column chip */
+.col-lineage-column-chip-selected {
+    background: #1976d2 !important;
+    color: #ffffff !important;
+    border-color: #1565c0 !important;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.4);
+    font-weight: 600;
+}
+
+/* Related column chips (opposite panel) */
+.col-lineage-column-chip-related {
+    background: #e3f2fd !important;
+    border-color: #1976d2 !important;
+    color: #1565c0 !important;
+    font-weight: 600;
 }
 
 /* Empty state */
@@ -200,7 +224,7 @@
     text-align: center;
 }
 
-/* Tooltip */
+/* Tooltip (hover on line, no selection) */
 .col-lineage-tooltip {
     z-index: 1000;
     background: #333;
@@ -212,4 +236,45 @@
     max-width: 400px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     pointer-events: none;
+}
+
+/* Persistent popup (click on column) */
+.col-lineage-popup {
+    position: absolute;
+    z-index: 10;
+    background: #1e1e2e;
+    color: #e0e0e0;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.6;
+    max-width: 420px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transform: translateY(-50%);
+}
+
+.col-lineage-popup-entry {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.col-lineage-popup-entry:last-child {
+    border-bottom: none;
+}
+
+.col-lineage-popup-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888;
+    margin-bottom: 2px;
+}
+
+.col-lineage-popup-value {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    color: #90caf9;
+    word-break: break-all;
 }

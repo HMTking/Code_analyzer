@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import './ColumnLineageView.css';
 
 const normalizeForLookup = (name) => {
@@ -18,9 +18,11 @@ function ColumnLineageView({
 }) {
     const containerRef = useRef(null);
     const bodyRef = useRef(null);
+    const leftPanelRef = useRef(null);
     const [lines, setLines] = useState([]);
     const [hoveredLine, setHoveredLine] = useState(null);
     const [tooltip, setTooltip] = useState(null);
+    const [selectedColumn, setSelectedColumn] = useState(null);
 
     // Parse selectedTable
     const parts = selectedTable ? selectedTable.split('|') : [];
@@ -76,6 +78,50 @@ function ColumnLineageView({
         columns: Array.from(cols),
     }));
 
+    // Compute related sets based on selectedColumn
+    const { relatedLineKeys, relatedSourceIds, relatedTargetIds, relatedEntries } = useMemo(() => {
+        if (!selectedColumn) return { relatedLineKeys: new Set(), relatedSourceIds: new Set(), relatedTargetIds: new Set(), relatedEntries: [] };
+
+        const lineKeys = new Set();
+        const srcIds = new Set();
+        const tgtIds = new Set();
+        const entries = [];
+
+        if (selectedColumn.side === 'source') {
+            filteredLineage.forEach((entry, idx) => {
+                const srcNorm = normalizeForLookup(entry.sourceTable);
+                const srcCol = (entry.sourceColumn || 'none').toLowerCase().replace(/\s+/g, '_');
+                if (srcNorm === normalizeForLookup(selectedColumn.table) && srcCol === (selectedColumn.column || 'none').toLowerCase().replace(/\s+/g, '_')) {
+                    const srcId = `src-${srcNorm}-${srcCol}`;
+                    const tgtId = `tgt-${(entry.targetColumn || '').toLowerCase().replace(/\s+/g, '_')}`;
+                    lineKeys.add(`${srcId}-${tgtId}-${idx}`);
+                    tgtIds.add(tgtId);
+                    entries.push(entry);
+                }
+            });
+        } else if (selectedColumn.side === 'target') {
+            const tgtColNorm = (selectedColumn.column || '').toLowerCase().replace(/\s+/g, '_');
+            filteredLineage.forEach((entry, idx) => {
+                if ((entry.targetColumn || '').toLowerCase().replace(/\s+/g, '_') === tgtColNorm) {
+                    const srcNorm = normalizeForLookup(entry.sourceTable);
+                    const srcCol = (entry.sourceColumn || 'none').toLowerCase().replace(/\s+/g, '_');
+                    const srcId = `src-${srcNorm}-${srcCol}`;
+                    const tgtId = `tgt-${tgtColNorm}`;
+                    lineKeys.add(`${srcId}-${tgtId}-${idx}`);
+                    srcIds.add(srcId);
+                    entries.push(entry);
+                }
+            });
+        }
+
+        return { relatedLineKeys: lineKeys, relatedSourceIds: srcIds, relatedTargetIds: tgtIds, relatedEntries: entries };
+    }, [selectedColumn, filteredLineage]);
+
+    // Reset selectedColumn when table changes
+    useEffect(() => {
+        setSelectedColumn(null);
+    }, [selectedTable]);
+
     // Recalculate lines
     const calculateLines = useCallback(() => {
         if (!bodyRef.current || filteredLineage.length === 0) {
@@ -129,14 +175,91 @@ function ColumnLineageView({
 
         panels.forEach(panel => panel.addEventListener('scroll', onScroll));
         window.addEventListener('resize', onScroll);
+        window.addEventListener('scroll', onScroll, true);
 
         return () => {
             panels.forEach(panel => panel.removeEventListener('scroll', onScroll));
             window.removeEventListener('resize', onScroll);
+            window.removeEventListener('scroll', onScroll, true);
         };
     }, [calculateLines]);
 
+    // Handle column chip click
+    const handleColumnClick = useCallback((id, side, table, column) => {
+        setSelectedColumn(prev => {
+            if (prev && prev.id === id) {
+                // Toggle off
+                return null;
+            }
+            return { id, side, table, column };
+        });
+
+        // Auto-scroll opposite panel after a short delay
+        setTimeout(() => {
+            let firstRelatedId = null;
+
+            if (side === 'source') {
+                // Find first related target
+                const srcNorm = normalizeForLookup(table);
+                const srcCol = (column || 'none').toLowerCase().replace(/\s+/g, '_');
+                for (const entry of filteredLineage) {
+                    const eSrcNorm = normalizeForLookup(entry.sourceTable);
+                    const eSrcCol = (entry.sourceColumn || 'none').toLowerCase().replace(/\s+/g, '_');
+                    if (eSrcNorm === srcNorm && eSrcCol === srcCol) {
+                        firstRelatedId = `tgt-${(entry.targetColumn || '').toLowerCase().replace(/\s+/g, '_')}`;
+                        break;
+                    }
+                }
+                if (firstRelatedId) {
+                    const el = document.getElementById(firstRelatedId);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else if (side === 'target') {
+                // Find first related source and scroll left panel
+                const tgtColNorm = (column || '').toLowerCase().replace(/\s+/g, '_');
+                for (const entry of filteredLineage) {
+                    if ((entry.targetColumn || '').toLowerCase().replace(/\s+/g, '_') === tgtColNorm) {
+                        const srcNorm = normalizeForLookup(entry.sourceTable);
+                        const srcCol = (entry.sourceColumn || 'none').toLowerCase().replace(/\s+/g, '_');
+                        firstRelatedId = `src-${srcNorm}-${srcCol}`;
+                        break;
+                    }
+                }
+                if (firstRelatedId && leftPanelRef.current) {
+                    const el = document.getElementById(firstRelatedId);
+                    if (el) {
+                        const panelRect = leftPanelRef.current.getBoundingClientRect();
+                        const elRect = el.getBoundingClientRect();
+                        const scrollOffset = elRect.top - panelRect.top + leftPanelRef.current.scrollTop - panelRect.height / 2 + elRect.height / 2;
+                        leftPanelRef.current.scrollTo({ top: scrollOffset, behavior: 'smooth' });
+                    }
+                }
+            }
+
+            // Recalculate lines after scroll animation
+            setTimeout(calculateLines, 350);
+        }, 50);
+    }, [filteredLineage, calculateLines]);
+
+    // Compute popup position
+    const popupStyle = useMemo(() => {
+        if (!selectedColumn || !bodyRef.current) return null;
+        const el = document.getElementById(selectedColumn.id);
+        if (!el) return null;
+        const bodyRect = bodyRef.current.getBoundingClientRect();
+        const chipRect = el.getBoundingClientRect();
+        const top = chipRect.top + chipRect.height / 2 - bodyRect.top;
+
+        if (selectedColumn.side === 'source') {
+            return { top, left: '46%' };
+        } else {
+            return { top, right: '46%' };
+        }
+    }, [selectedColumn, lines]); // recalc when lines change (after scroll)
+
     const handleLineHover = (e, line) => {
+        // Suppress hover tooltip when a column is selected
+        if (selectedColumn) return;
         setHoveredLine(line.key);
         setTooltip({
             x: e.clientX,
@@ -149,6 +272,47 @@ function ColumnLineageView({
         setHoveredLine(null);
         setTooltip(null);
     };
+
+    // Determine line style based on selection state
+    const getLineStyle = useCallback((lineKey) => {
+        if (selectedColumn) {
+            if (relatedLineKeys.has(lineKey)) {
+                return { stroke: '#1976d2', strokeWidth: 2.5, opacity: 1 };
+            }
+            return { stroke: '#e0e0e0', strokeWidth: 1, opacity: 0.3 };
+        }
+        // Default: hover or normal
+        if (hoveredLine === lineKey) {
+            return { stroke: '#1976d2', strokeWidth: 2.5, opacity: 1 };
+        }
+        return { stroke: '#9e9e9e', strokeWidth: 1.5, opacity: 1 };
+    }, [selectedColumn, relatedLineKeys, hoveredLine]);
+
+    // Get CSS class for a source column chip
+    const getSourceChipClass = useCallback((srcId) => {
+        let cls = 'col-lineage-column-chip col-lineage-column-chip-source';
+        if (selectedColumn) {
+            if (selectedColumn.id === srcId) {
+                cls += ' col-lineage-column-chip-selected';
+            } else if (relatedSourceIds.has(srcId)) {
+                cls += ' col-lineage-column-chip-related';
+            }
+        }
+        return cls;
+    }, [selectedColumn, relatedSourceIds]);
+
+    // Get CSS class for a target column chip
+    const getTargetChipClass = useCallback((tgtId) => {
+        let cls = 'col-lineage-column-chip col-lineage-column-chip-target';
+        if (selectedColumn) {
+            if (selectedColumn.id === tgtId) {
+                cls += ' col-lineage-column-chip-selected';
+            } else if (relatedTargetIds.has(tgtId)) {
+                cls += ' col-lineage-column-chip-related';
+            }
+        }
+        return cls;
+    }, [selectedColumn, relatedTargetIds]);
 
     // Edge cases
     if (!selectedTable) {
@@ -205,22 +369,26 @@ function ColumnLineageView({
             <div className="col-lineage-body" ref={bodyRef}>
                 {/* SVG Overlay */}
                 <svg className="col-lineage-svg">
-                    {lines.map((l) => (
-                        <path
-                            key={l.key}
-                            d={`M ${l.x1} ${l.y1} C ${(l.x1 + l.x2) / 2} ${l.y1}, ${(l.x1 + l.x2) / 2} ${l.y2}, ${l.x2} ${l.y2}`}
-                            stroke={hoveredLine === l.key ? '#1976d2' : '#9e9e9e'}
-                            strokeWidth={hoveredLine === l.key ? 2.5 : 1.5}
-                            fill="none"
-                            style={{ pointerEvents: 'stroke', cursor: 'pointer' }}
-                            onMouseEnter={(e) => handleLineHover(e, l)}
-                            onMouseLeave={handleLineLeave}
-                        />
-                    ))}
+                    {lines.map((l) => {
+                        const style = getLineStyle(l.key);
+                        return (
+                            <path
+                                key={l.key}
+                                d={`M ${l.x1} ${l.y1} C ${(l.x1 + l.x2) / 2} ${l.y1}, ${(l.x1 + l.x2) / 2} ${l.y2}, ${l.x2} ${l.y2}`}
+                                stroke={style.stroke}
+                                strokeWidth={style.strokeWidth}
+                                opacity={style.opacity}
+                                fill="none"
+                                style={{ pointerEvents: 'stroke', cursor: 'pointer' }}
+                                onMouseEnter={(e) => handleLineHover(e, l)}
+                                onMouseLeave={handleLineLeave}
+                            />
+                        );
+                    })}
                 </svg>
 
                 {/* Left Panel - Sources */}
-                <div className="col-lineage-panel col-lineage-panel-left">
+                <div className="col-lineage-panel col-lineage-panel-left" ref={leftPanelRef}>
                     <div className="col-lineage-panel-header">
                         <span className="col-lineage-badge col-lineage-badge-source">{sourceLayerLabel}</span>
                         <span>Source Tables & Columns</span>
@@ -246,11 +414,14 @@ function ColumnLineageView({
                                     {group.columns.map((col) => {
                                         const srcNorm = normalizeForLookup(group.table);
                                         const colNorm = (col || 'none').toLowerCase().replace(/\s+/g, '_');
+                                        const chipId = `src-${srcNorm}-${colNorm}`;
                                         return (
                                             <div
                                                 key={`${group.table}-${col}`}
-                                                className="col-lineage-column-chip col-lineage-column-chip-source"
-                                                id={`src-${srcNorm}-${colNorm}`}
+                                                className={getSourceChipClass(chipId)}
+                                                id={chipId}
+                                                onClick={() => handleColumnClick(chipId, 'source', group.table, col)}
+                                                style={{ cursor: 'pointer' }}
                                             >
                                                 {col || 'None'}
                                             </div>
@@ -271,11 +442,14 @@ function ColumnLineageView({
                     <div className="col-lineage-column-list">
                         {targetColumns.map((col) => {
                             const colNorm = (col || '').toLowerCase().replace(/\s+/g, '_');
+                            const chipId = `tgt-${colNorm}`;
                             return (
                                 <div
                                     key={col}
-                                    className="col-lineage-column-chip col-lineage-column-chip-target"
-                                    id={`tgt-${colNorm}`}
+                                    className={getTargetChipClass(chipId)}
+                                    id={chipId}
+                                    onClick={() => handleColumnClick(chipId, 'target', null, col)}
+                                    style={{ cursor: 'pointer' }}
                                 >
                                     {col}
                                 </div>
@@ -283,10 +457,28 @@ function ColumnLineageView({
                         })}
                     </div>
                 </div>
+
+                {/* Persistent Popup for selected column */}
+                {selectedColumn && relatedEntries.length > 0 && popupStyle && (
+                    <div className="col-lineage-popup" style={popupStyle}>
+                        {relatedEntries.map((entry, i) => (
+                            <div key={i} className="col-lineage-popup-entry">
+                                <div className="col-lineage-popup-label">Mapping</div>
+                                <div className="col-lineage-popup-value">
+                                    {entry.sourceTable || 'Derived'}.{entry.sourceColumn || 'N/A'} → {entry.targetColumn}
+                                </div>
+                                <div className="col-lineage-popup-label">Transform</div>
+                                <div className="col-lineage-popup-value">{entry.transform || 'N/A'}</div>
+                                <div className="col-lineage-popup-label">Expression</div>
+                                <div className="col-lineage-popup-value">{entry.expression || 'N/A'}</div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
-            {/* Tooltip */}
-            {tooltip && (
+            {/* Tooltip (only when no column is selected) */}
+            {!selectedColumn && tooltip && (
                 <div
                     className="col-lineage-tooltip"
                     style={{
