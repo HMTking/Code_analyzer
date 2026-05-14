@@ -3,11 +3,12 @@
 .col-lineage-container {
     display: flex;
     flex-direction: column;
+    height: calc(100vh - 200px);
     min-height: 500px;
+    max-height: 900px;
     background-color: #ffffff;
     border-radius: 8px;
-    overflow-x: hidden;
-    overflow-y: visible;
+    overflow: hidden;
     position: relative;
 }
 
@@ -50,7 +51,8 @@
     display: flex;
     flex-direction: row;
     flex: 1;
-    overflow: visible;
+    overflow: hidden;
+    min-height: 0;
 }
 
 /* SVG overlay for connecting lines */
@@ -73,6 +75,8 @@
 .col-lineage-panel {
     width: 45%;
     padding: 16px 20px;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 .col-lineage-panel-left {
@@ -82,7 +86,7 @@
 
 .col-lineage-panel-right {
     margin-left: auto;
-    overflow-y: visible;
+    overflow-y: auto;
 }
 
 .col-lineage-panel-header {

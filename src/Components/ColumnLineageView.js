@@ -19,6 +19,7 @@ function ColumnLineageView({
     const containerRef = useRef(null);
     const bodyRef = useRef(null);
     const leftPanelRef = useRef(null);
+    const rightPanelRef = useRef(null);
     const [lines, setLines] = useState([]);
     const [hoveredLine, setHoveredLine] = useState(null);
     const [tooltip, setTooltip] = useState(null);
@@ -194,12 +195,12 @@ function ColumnLineageView({
             return { id, side, table, column };
         });
 
-        // Auto-scroll opposite panel after a short delay
+        // Auto-scroll the OPPOSITE panel internally after a short delay
         setTimeout(() => {
             let firstRelatedId = null;
 
             if (side === 'source') {
-                // Find first related target
+                // Find first related target column
                 const srcNorm = normalizeForLookup(table);
                 const srcCol = (column || 'none').toLowerCase().replace(/\s+/g, '_');
                 for (const entry of filteredLineage) {
@@ -210,12 +211,18 @@ function ColumnLineageView({
                         break;
                     }
                 }
-                if (firstRelatedId) {
+                // Scroll RIGHT PANEL internally (not the page)
+                if (firstRelatedId && rightPanelRef.current) {
                     const el = document.getElementById(firstRelatedId);
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (el) {
+                        const panelRect = rightPanelRef.current.getBoundingClientRect();
+                        const elRect = el.getBoundingClientRect();
+                        const scrollOffset = elRect.top - panelRect.top + rightPanelRef.current.scrollTop - panelRect.height / 2 + elRect.height / 2;
+                        rightPanelRef.current.scrollTo({ top: scrollOffset, behavior: 'smooth' });
+                    }
                 }
             } else if (side === 'target') {
-                // Find first related source and scroll left panel
+                // Find first related source column
                 const tgtColNorm = (column || '').toLowerCase().replace(/\s+/g, '_');
                 for (const entry of filteredLineage) {
                     if ((entry.targetColumn || '').toLowerCase().replace(/\s+/g, '_') === tgtColNorm) {
@@ -225,6 +232,7 @@ function ColumnLineageView({
                         break;
                     }
                 }
+                // Scroll LEFT PANEL internally (already works correctly)
                 if (firstRelatedId && leftPanelRef.current) {
                     const el = document.getElementById(firstRelatedId);
                     if (el) {
@@ -236,7 +244,7 @@ function ColumnLineageView({
                 }
             }
 
-            // Recalculate lines after scroll animation
+            // Recalculate SVG lines after scroll animation completes
             setTimeout(calculateLines, 350);
         }, 50);
     }, [filteredLineage, calculateLines]);
@@ -434,7 +442,7 @@ function ColumnLineageView({
                 </div>
 
                 {/* Right Panel - Target */}
-                <div className="col-lineage-panel col-lineage-panel-right">
+                <div className="col-lineage-panel col-lineage-panel-right" ref={rightPanelRef}>
                     <div className="col-lineage-panel-header">
                         <span className="col-lineage-badge col-lineage-badge-target">{targetLayerLabel}</span>
                         <span>{tableName} Columns</span>
