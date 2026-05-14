@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+Backend/node_modules
 /.pnp
 .pnp.js
 
@@ -60,6 +61,3 @@ test_results.txt
 
 # Backend build output
 Backend/build/
-
-# documents
-reference_Doc

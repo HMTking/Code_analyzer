@@ -540,6 +540,28 @@ function OutputViewFabricEnhanced() {
         }
     }, [allTablesCount]); // Only run when table count changes
 
+    // FIX_VIEWMODE_SWITCH — Re-render table lineage when switching back from Column Mapping
+    // This ensures the diagram reflects the currently selected table (which may have
+    // been changed while in Column Mapping mode).
+    useEffect(() => {
+        if (viewMode === 'table') {
+            if (selectedTable && selectedTable !== '') {
+                // A specific table is selected → render filtered lineage for that table
+                setIsFiltered(true);
+                setNodes([]);
+                setEdges([]);
+                const [tableName, tableLayer] = selectedTable.split('|');
+                setTimeout(() => {
+                    renderFilteredLineage(tableName, tableLayer);
+                }, 50);
+            } else {
+                // No table selected → render full lineage (all tables)
+                setIsFiltered(false);
+                handleSubmit();
+            }
+        }
+    }, [viewMode]); // Only trigger when viewMode changes
+
     // Fit view to screen whenever nodes change
     useEffect(() => {
         if (nodes.length > 0 && reactFlowInstance.current) {
@@ -551,7 +573,27 @@ function OutputViewFabricEnhanced() {
     }, [nodes]);
 
     const handleSelectChange = (event) => {
-        setSelectedTable(event.target.value);
+        const newValue = event.target.value;
+        setSelectedTable(newValue);
+
+        // REMOVED_FILTER_LINEAGE — auto-filter when in table lineage view
+        if (viewMode === 'table') {
+            if (!newValue || newValue === '') {
+                // Cleared selection → show all tables
+                setIsFiltered(false);
+                handleSubmit();
+            } else {
+                // Table selected → filter to that table's lineage
+                setIsFiltered(true);
+                setNodes([]);
+                setEdges([]);
+                const [tableName, tableLayer] = newValue.split('|');
+                setTimeout(() => {
+                    renderFilteredLineage(tableName, tableLayer);
+                }, 50);
+            }
+        }
+        // Column Mapping view: no action needed — ColumnLineageView reads selectedTable as a prop
     };
 
     const handleFilter = async () => {
@@ -1015,11 +1057,13 @@ function OutputViewFabricEnhanced() {
                         <option value="column">Column Mapping</option>
                     </Form.Select>
 
+                    {/* REMOVED_VIEW_LINEAGE — Button removed; lineage auto-renders via useEffect
                     {viewMode === 'table' && (
                         <Button className='lineage-btn' type="submit" onClick={handleSubmit}>
                             View Lineage
                         </Button>
                     )}
+                    */}
 
                     <Form.Select className='lineage-select' aria-label="Select Table" value={selectedTable} onChange={handleSelectChange}>
                         <option value="">---Select Table---</option>
@@ -1030,19 +1074,19 @@ function OutputViewFabricEnhanced() {
                         ))}
                     </Form.Select>
 
+                    {/* REMOVED_FILTER_LINEAGE — Button removed; filtering now auto-triggers on dropdown change
                     {viewMode === 'table' && (
                         <Button className='lineage-btn lineage-btn-filter' type="submit" onClick={handleFilter}>
                             Filter Lineage
                         </Button>
                     )}
+                    */}
 
                     <Button className='lineage-btn' style={{ backgroundColor: '#6c757d', borderColor: '#6c757d' }} onClick={() => {
-                        setNodes([]);
-                        setEdges([]);
-                        setChecked(false);
-                        setIsFiltered(false);
                         setSelectedTable('');
+                        setIsFiltered(false);
                         localStorage.removeItem('fabricEnhancedLineageState');
+                        handleSubmit();
                     }}>
                         Reset
                     </Button>
@@ -1145,12 +1189,20 @@ function OutputViewFabricEnhanced() {
                     </div>
                     :
                     <div className='lineage-empty'>
-                        <div className='lineage-empty-icon'>📊</div>
-                        <div className='lineage-empty-text'>
-                            {allTablesCount > 0 
-                                ? 'Click "View Lineage" to visualize Bronze → Silver → Gold data flow'
-                                : 'No data available. Run analysis on the Fabric Enhanced page first, then click "Refresh Data"'}
-                        </div>
+                        {allTablesCount > 0 ? (
+                            <>
+                                {/* REMOVED_VIEW_LINEAGE — auto-rendering in progress */}
+                                <div className='lineage-empty-icon' style={{ fontSize: '32px' }}>⏳</div>
+                                <div className='lineage-empty-text'>Rendering lineage diagram...</div>
+                            </>
+                        ) : (
+                            <>
+                                <div className='lineage-empty-icon'>📊</div>
+                                <div className='lineage-empty-text'>
+                                    No data available. Run analysis on the Fabric Enhanced page first, then click "Refresh Data"
+                                </div>
+                            </>
+                        )}
                     </div>
                 ) : (
                     /* ===== NEW COLUMN MAPPING VIEW ===== */
