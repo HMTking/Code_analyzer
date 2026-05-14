@@ -17,6 +17,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import ImageIcon from '@mui/icons-material/Image';
+import ColumnLineageView from './ColumnLineageView';
 
 const initBgColor = '#1A192B';
 const connectionLineStyle = { stroke: '#fff' };
@@ -40,7 +41,8 @@ function OutputViewFabricEnhanced() {
                     Silver: parsed?.silverDetails?.length || 0,
                     Gold: parsed?.goldDetails?.length || 0,
                     Pipelines: parsed?.pipelines?.length || 0,
-                    Staging: parsed?.stagingtables?.length || 0
+                    Staging: parsed?.stagingtables?.length || 0,
+                    ColumnLineage: parsed?.columnLineage?.length || 0
                 });
                 console.log('📋 Bronze tables:', (parsed?.bronzeDetails || []).map(t => t.tablename));
                 console.log('📋 Silver tables:', (parsed?.silverDetails || []).map(t => t.tablename));
@@ -55,7 +57,8 @@ function OutputViewFabricEnhanced() {
             bronzeDetails: [],
             silverDetails: [],
             goldDetails: [],
-            stagingtables: []
+            stagingtables: [],
+            columnLineage: []
         };
     };
 
@@ -113,6 +116,8 @@ function OutputViewFabricEnhanced() {
     const [bgColor, setBgColor] = useState(initBgColor);
     const [checked, setChecked] = useState(storedLineageState?.checked || false);
     const [isFiltered, setIsFiltered] = useState(storedLineageState?.isFiltered || false);
+
+    const [viewMode, setViewMode] = useState('table'); // 'table' or 'column'
 
     // Column-level inspection — when the user clicks a node, attach a
     // column-list "sub-node" right next to it (right of target tables,
@@ -998,9 +1003,24 @@ function OutputViewFabricEnhanced() {
                     <Button className='lineage-btn' style={{ backgroundColor: '#17a2b8', borderColor: '#17a2b8' }} onClick={() => setOutputJSON(getStoredData())}>
                         Refresh Data
                     </Button>
-                    <Button className='lineage-btn' type="submit" onClick={handleSubmit}>
-                        View Lineage
-                    </Button>
+
+                    {/* View Mode Selector */}
+                    <Form.Select
+                        className='lineage-select'
+                        value={viewMode}
+                        onChange={(e) => setViewMode(e.target.value)}
+                        style={{ minWidth: '200px', maxWidth: '220px' }}
+                    >
+                        <option value="table">Table Lineage</option>
+                        <option value="column">Column Mapping</option>
+                    </Form.Select>
+
+                    {viewMode === 'table' && (
+                        <Button className='lineage-btn' type="submit" onClick={handleSubmit}>
+                            View Lineage
+                        </Button>
+                    )}
+
                     <Form.Select className='lineage-select' aria-label="Select Table" value={selectedTable} onChange={handleSelectChange}>
                         <option value="">---Select Table---</option>
                         {allTables.map((table, index) => (
@@ -1009,9 +1029,13 @@ function OutputViewFabricEnhanced() {
                             </option>
                         ))}
                     </Form.Select>
-                    <Button className='lineage-btn lineage-btn-filter' type="submit" onClick={handleFilter}>
-                        Filter Lineage
-                    </Button>
+
+                    {viewMode === 'table' && (
+                        <Button className='lineage-btn lineage-btn-filter' type="submit" onClick={handleFilter}>
+                            Filter Lineage
+                        </Button>
+                    )}
+
                     <Button className='lineage-btn' style={{ backgroundColor: '#6c757d', borderColor: '#6c757d' }} onClick={() => {
                         setNodes([]);
                         setEdges([]);
@@ -1023,7 +1047,8 @@ function OutputViewFabricEnhanced() {
                         Reset
                     </Button>
                 </div>
-                {checked ?
+                {viewMode === 'table' ? (
+                    checked ?
                     <div className='lineage-flow-container' ref={flowRef} style={{ position: 'relative' }}>
                         {/* Download button at top-right of graph - excluded from image export */}
                         <div data-html2canvas-ignore="true" style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }}>
@@ -1127,7 +1152,17 @@ function OutputViewFabricEnhanced() {
                                 : 'No data available. Run analysis on the Fabric Enhanced page first, then click "Refresh Data"'}
                         </div>
                     </div>
-                }
+                ) : (
+                    /* ===== NEW COLUMN MAPPING VIEW ===== */
+                    <ColumnLineageView
+                        columnLineage={outputJSON?.columnLineage || []}
+                        silverDetails={outputJSON?.silverDetails || []}
+                        goldDetails={outputJSON?.goldDetails || []}
+                        bronzeDetails={outputJSON?.bronzeDetails || []}
+                        stagingtables={outputJSON?.stagingtables || []}
+                        selectedTable={selectedTable}
+                    />
+                )}
             </div>
         </>
     );

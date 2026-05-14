@@ -121,6 +121,8 @@ function Fabric() {
 
     const [stagingtables, setStagingTables] = useState([]);
 
+    const [columnLineage, setColumnLineage] = useState([]);
+
     const [loading, setLoading] = useState(false);
     
     // Track if processing has actually started (to avoid saving empty data on mount)
@@ -174,6 +176,7 @@ function Fabric() {
                 if (data.silverDetails) setSilverDetails(data.silverDetails);
                 if (data.goldDetails) setGoldDetails(data.goldDetails);
                 if (data.stagingtables) setStagingTables(data.stagingtables);
+                if (data.columnLineage) setColumnLineage(data.columnLineage);
                 setHasProcessed(true);
                 console.log('✅ Fabric Enhanced: Data restored from localStorage');
             } catch (err) {
@@ -203,7 +206,8 @@ function Fabric() {
                 bronzeDetails,
                 silverDetails,
                 goldDetails,
-                stagingtables
+                stagingtables,
+                columnLineage
             };
 
             const hasData = pipelines.length > 0 || bronzeDetails.length > 0 || 
@@ -245,7 +249,7 @@ function Fabric() {
             };
             localStorage.setItem('fabricEnhancedUIState', JSON.stringify(uiState));
         }
-    }, [hasProcessed, loading, pipelines, bronzeDetails, silverDetails, goldDetails, stagingtables, fileprocess, fileError, filenotdetected, messageResponse]);
+    }, [hasProcessed, loading, pipelines, bronzeDetails, silverDetails, goldDetails, stagingtables, columnLineage, fileprocess, fileError, filenotdetected, messageResponse]);
 
     const handleChange = (event) => {
         setChecked(event.target.checked);
@@ -754,8 +758,27 @@ function Fabric() {
                             "consumerTable": "<produced_silver_table_name>",
                             "ColumnsUsed": ["<col1>", "<col2>"]
                             }
+                        ],
+                        "columnLineage": [
+                            {
+                            "targetTable": "<produced_silver_table_name>",
+                            "targetColumn": "<silver_output_column_name>",
+                            "sourceTable": "<source_table_name_matching_stagingtablesinfo_tablename>",
+                            "sourceColumn": "<source_column_name_or_null_if_derived>",
+                            "transform": "<direct_alias|cast|case_when|expression|derived>",
+                            "expression": "<the_SQL_or_PySpark_expression>"
+                            }
                         ]
                         }
+                        Additionally, populate "columnLineage" with EVERY column-to-column mapping for the final output table(s).
+                        For each column in silverDetails.ColumnUsed, emit ONE columnLineage entry with:
+                        - "targetTable": the produced silver table name (matches silverDetails.tablename)
+                        - "targetColumn": the output column name exactly as it appears in ColumnUsed
+                        - "sourceTable": the source table this column originates from (must match a tablename in stagingtablesinfo). If the column is derived from a literal/timestamp/expression with no source table, use "Derived".
+                        - "sourceColumn": the raw source column name (e.g., "VBELN", "KUNNR"). null if derived.
+                        - "transform": one of "direct_alias", "cast", "case_when", "expression", "derived"
+                        - "expression": the actual SQL/PySpark expression (e.g., "VBELN as delivery_number", "CAST(KLIMK AS DECIMAL(15,2))")
+                        If a target column has MULTIPLE source columns (e.g., COALESCE(A.col1, B.col2)), emit MULTIPLE entries — one per source column — with the same targetColumn.
 
                         --- CATEGORY 4: Gold Layer File ---
                         Step-by-step instructions:
@@ -819,8 +842,27 @@ function Fabric() {
                             "consumerTable": "<produced_gold_table_name>",
                             "ColumnsUsed": ["<col1>", "<col2>"]
                             }
+                        ],
+                        "columnLineage": [
+                            {
+                            "targetTable": "<produced_gold_table_name>",
+                            "targetColumn": "<gold_output_column_name>",
+                            "sourceTable": "<source_table_name_matching_stagingtablesinfo_tablename>",
+                            "sourceColumn": "<source_column_name_or_null_if_derived>",
+                            "transform": "<direct_alias|cast|case_when|expression|derived>",
+                            "expression": "<the_SQL_or_PySpark_expression>"
+                            }
                         ]
                         }
+                        Additionally, populate "columnLineage" with EVERY column-to-column mapping for the final output table(s).
+                        For each column in goldDetails.ColumnUsed, emit ONE columnLineage entry with:
+                        - "targetTable": the produced gold table name (matches goldDetails.tablename)
+                        - "targetColumn": the output column name exactly as it appears in ColumnUsed
+                        - "sourceTable": the source table this column originates from (must match a tablename in stagingtablesinfo). If the column is derived from a literal/timestamp/expression with no source table, use "Derived".
+                        - "sourceColumn": the raw source column name (e.g., "VBELN", "KUNNR"). null if derived.
+                        - "transform": one of "direct_alias", "cast", "case_when", "expression", "derived"
+                        - "expression": the actual SQL/PySpark expression (e.g., "VBELN as delivery_number", "CAST(KLIMK AS DECIMAL(15,2))")
+                        If a target column has MULTIPLE source columns (e.g., COALESCE(A.col1, B.col2)), emit MULTIPLE entries — one per source column — with the same targetColumn.
 
                         --- CATEGORY 5: No Match ---
                         {
@@ -1008,6 +1050,25 @@ function Fabric() {
                                         });
                                     return updatedMounts;
                                 });
+
+                                // Column lineage for Silver
+                                if (Array.isArray(jsonobject?.columnLineage) && jsonobject.columnLineage.length > 0) {
+                                    setColumnLineage(prev => {
+                                        const updated = [...prev];
+                                        jsonobject.columnLineage.forEach(entry => {
+                                            const newEntry = { ...entry, targetLayer: 'Silver' };
+                                            const exists = updated.some(e =>
+                                                e.targetTable === newEntry.targetTable &&
+                                                e.targetColumn === newEntry.targetColumn &&
+                                                e.sourceTable === newEntry.sourceTable &&
+                                                e.sourceColumn === newEntry.sourceColumn &&
+                                                e.targetLayer === newEntry.targetLayer
+                                            );
+                                            if (!exists) updated.push(newEntry);
+                                        });
+                                        return updated;
+                                    });
+                                }
                             }
                             else if (flag === 4) {
 
@@ -1067,6 +1128,25 @@ function Fabric() {
                                         });
                                     return updatedMounts;
                                 });
+
+                                // Column lineage for Gold
+                                if (Array.isArray(jsonobject?.columnLineage) && jsonobject.columnLineage.length > 0) {
+                                    setColumnLineage(prev => {
+                                        const updated = [...prev];
+                                        jsonobject.columnLineage.forEach(entry => {
+                                            const newEntry = { ...entry, targetLayer: 'Gold' };
+                                            const exists = updated.some(e =>
+                                                e.targetTable === newEntry.targetTable &&
+                                                e.targetColumn === newEntry.targetColumn &&
+                                                e.sourceTable === newEntry.sourceTable &&
+                                                e.sourceColumn === newEntry.sourceColumn &&
+                                                e.targetLayer === newEntry.targetLayer
+                                            );
+                                            if (!exists) updated.push(newEntry);
+                                        });
+                                        return updated;
+                                    });
+                                }
                             }
                             else if (flag === 5){
                                 // console.log("Do Nothing")
