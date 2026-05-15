@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import './ColumnLineageView.css';
+import { toPng } from 'html-to-image';
+import * as XLSX from 'xlsx-js-style';
+import DownloadIcon from '@mui/icons-material/Download';
+import ImageIcon from '@mui/icons-material/Image';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 
 const normalizeForLookup = (name) => {
     if (!name) return '';
@@ -24,6 +34,8 @@ function ColumnLineageView({
     const [hoveredLine, setHoveredLine] = useState(null);
     const [tooltip, setTooltip] = useState(null);
     const [selectedColumn, setSelectedColumn] = useState(null);
+    const [downloadMenuAnchor, setDownloadMenuAnchor] = useState(null);
+    const downloadMenuOpen = Boolean(downloadMenuAnchor);
 
     // Parse selectedTable
     const parts = selectedTable ? selectedTable.split('|') : [];
@@ -322,6 +334,76 @@ function ColumnLineageView({
         return cls;
     }, [selectedColumn, relatedTargetIds]);
 
+    const handleDownloadExcel = () => {
+        if (!filteredLineage || filteredLineage.length === 0) return;
+
+        const excelData = filteredLineage.map(item => ({
+            "Target Column": item.targetColumn,
+            "Source Table": item.sourceTable,
+            "Source Column": item.sourceColumn,
+            "Transform": item.transform,
+            "Expression": item.expression
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(excelData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Column Mapping");
+        XLSX.writeFile(wb, `ColumnMapping_${tableName}.xlsx`);
+        setDownloadMenuAnchor(null);
+    };
+
+    const handleDownloadImage = () => {
+        if (containerRef.current === null) return;
+        setDownloadMenuAnchor(null);
+
+        const container = containerRef.current;
+        const body = bodyRef.current;
+        const leftPanel = leftPanelRef.current;
+        const rightPanel = rightPanelRef.current;
+
+        // Save original styles
+        const origContainer = { height: container.style.height, maxHeight: container.style.maxHeight, overflow: container.style.overflow };
+        const origBody = { overflow: body?.style.overflow, minHeight: body?.style.minHeight };
+        const origLeft = { overflowY: leftPanel?.style.overflowY };
+        const origRight = { overflowY: rightPanel?.style.overflowY };
+
+        // Temporarily expand to full content height
+        container.style.height = 'auto';
+        container.style.maxHeight = 'none';
+        container.style.overflow = 'visible';
+        if (body) { body.style.overflow = 'visible'; body.style.minHeight = 'auto'; }
+        if (leftPanel) { leftPanel.style.overflowY = 'visible'; }
+        if (rightPanel) { rightPanel.style.overflowY = 'visible'; }
+
+        // Recalculate SVG lines for expanded layout
+        calculateLines();
+
+        // Small delay to let the DOM reflow before capture
+        setTimeout(() => {
+            toPng(container, { cacheBust: true, backgroundColor: '#ffffff' })
+                .then((dataUrl) => {
+                    const link = document.createElement('a');
+                    link.download = `ColumnMapping_${tableName}.png`;
+                    link.href = dataUrl;
+                    link.click();
+                })
+                .catch((err) => {
+                    console.error('Failed to generate image', err);
+                })
+                .finally(() => {
+                    // Restore original styles
+                    container.style.height = origContainer.height;
+                    container.style.maxHeight = origContainer.maxHeight;
+                    container.style.overflow = origContainer.overflow;
+                    if (body) { body.style.overflow = origBody.overflow; body.style.minHeight = origBody.minHeight; }
+                    if (leftPanel) { leftPanel.style.overflowY = origLeft.overflowY; }
+                    if (rightPanel) { rightPanel.style.overflowY = origRight.overflowY; }
+                    // Recalculate lines for restored layout
+                    calculateLines();
+                });
+        }, 100);
+    };
+
     // Edge cases
     if (!selectedTable) {
         return (
@@ -371,7 +453,48 @@ function ColumnLineageView({
                         {sourceLayerLabel} → {targetLayerLabel} mappings for: <strong>{tableName}</strong>
                     </span>
                 </div>
-                <span className="col-lineage-edge-count">Edges: {filteredLineage.length}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <IconButton
+                        onClick={(e) => setDownloadMenuAnchor(e.currentTarget)}
+                        size="small"
+                        sx={{
+                            backgroundColor: '#059bbf',
+                            color: 'white',
+                            '&:hover': {
+                                backgroundColor: '#047a99'
+                            }
+                        }}
+                    >
+                        <DownloadIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={downloadMenuAnchor}
+                        open={downloadMenuOpen}
+                        onClose={() => setDownloadMenuAnchor(null)}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                    >
+                        <MenuItem onClick={handleDownloadExcel}>
+                            <ListItemIcon>
+                                <TableChartIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Column Mapping (Excel)</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={handleDownloadImage}>
+                            <ListItemIcon>
+                                <ImageIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Column Mapping (PNG)</ListItemText>
+                        </MenuItem>
+                    </Menu>
+                    <span className="col-lineage-edge-count">Edges: {filteredLineage.length}</span>
+                </div>
             </div>
 
             <div className="col-lineage-body" ref={bodyRef}>
